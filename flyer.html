@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北谷町商工会青年部 部員情報共有システムのご案内</title>
+<style>
+  :root {
+    --primary-color: #00529B;
+    --secondary-color: #f2f2f2;
+    --text-color: #333;
+    --header-font: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    --body-font: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  }
+
+  body {
+    font-family: var(--body-font);
+    background-color: #f0f0f0; /* プレビュー用に背景色を設定 */
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .container {
+    width: 210mm;
+    height: 297mm; /* A4サイズに高さを固定 */
+    padding: 12mm; /* 余白を調整 */
+    margin: 20px auto; /* プレビュー用にマージンを追加 */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* プレビュー用の影 */
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: var(--header-font);
+    font-size: 26px;
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 700;
+  }
+  .header p {
+    font-size: 16px;
+    margin: 8px 0 0;
+    font-weight: 500;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: var(--header-font);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+  }
+  .section-title .icon {
+    font-size: 22px;
+    margin-right: 10px;
+  }
+
+  /* List styles */
+  .list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  .list-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+  .list-item .icon {
+    font-size: 22px;
+    margin-right: 15px;
+    color: var(--primary-color);
+    width: 25px;
+    text-align: center;
+    padding-top: 2px;
+  }
+  .list-item h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .list-item p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* How to use */
+  .how-to-use {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .step {
+    text-align: center;
+    flex: 1;
+  }
+  .step-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px auto;
+  }
+  .step-arrow {
+    font-size: 28px;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-top: 5px;
+  }
+  .step p {
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: auto;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+  }
+  .footer h2 {
+    font-family: var(--header-font);
+    font-size: 18px;
+    margin: 0 0 5px;
+    color: var(--primary-color);
+  }
+  .qr-code {
+    width: 100px;
+    height: 100px;
+    margin: 5px auto;
+  }
+  .footer p {
+    margin: 0;
+    font-size: 13px;
+  }
+  .url {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 14px;
+  }
+  
+  @media print {
+    body {
+      background-color: white;
+    }
+    .container {
+      margin: 0;
+      padding: 15mm;
+      box-shadow: none;
+      height: auto;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <header class="header">
+    <h1>北谷町商工会青年部<br>部員情報共有システムのご案内</h1>
+    <p>部員同士の「知る」を「つながる」に変えるプラットフォーム</p>
+  </header>
+  
+  <main>
+    <section class="section">
+      <h2 class="section-title"><span class="icon">🤔</span>背景：こんな課題、ありませんでしたか？</h2>
+      <ul class="list">
+        <li class="list-item">
+          <div class="icon">👤</div>
+          <div>
+            <h4>顔と名前が一致しない…</h4>
+            <p>部員が多く、なかなか覚えきれない。</p>
+          </div>
+        </li>
+        <li class="list-item">
+          <div class="icon">💼</div>
+          <div>
+            <h4>お互いの事業を知らない…</h4>
+            <p>どんな仕事をしているのか具体的に知る機会が少ない。</p>
+          </div>
+        </li>
+        <li class="list-item">
+          <div class="icon">🔗</div>
+          <div>
+            <h4>連携のきっかけがない…</h4>
+            <p>協業したくても、誰に相談すれば良いか分からない。</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+    
+    <section class="section">
+      <h2 class="section-title"><span class="icon">🎯</span>目的：私たちが目指すこと</h2>
+      <ul class="list">
+        <li class="list-item">
+          <div class="icon">📈</div>
+          <div>
+            <h4>交流の活性化</h4>
+            <p>相互理解を深め、コミュニケーションの質を高める。</p>
+          </div>
+        </li>
+        <li class="list-item">
+          <div class="icon">🤝</div>
+          <div>
+            <h4>ビジネスマッチングの促進</h4>
+            <p>部員同士の新たな協業や受発注のきっかけを創出。</p>
+          </div>
+        </li>
+        <li class="list-item">
+          <div class="icon">🌟</div>
+          <div>
+            <h4>青年部全体の魅力向上</h4>
+            <p>加入メリットを可視化し、組織の価値を高める。</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title"><span class="icon">⚙️</span>システムの仕組み</h2>
+      <div class="how-to-use">
+        <div class="step">
+          <div class="step-icon">1</div>
+          <p>アカウントを登録し、マイページでビジネスプロフィールを入力します。</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-icon">2</div>
+          <p>部員一覧ページで、他のメンバーの顔写真や事業内容を確認します。</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-icon">3</div>
+          <p>気になる部員の詳細プロフィールを基に、具体的な連携を考えます。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <footer class="footer">
+    <h2>スマートフォンで今すぐアクセス！</h2>
+    <p>QRコードを読み取って、プロフィールを登録・閲覧しよう！</p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chatan-members-site.web.app" alt="QR Code" class="qr-code">
+    <p class="url">https://chatan-members-site.web.app</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
