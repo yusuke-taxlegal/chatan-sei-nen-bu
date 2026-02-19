@@ -19,6 +19,7 @@
     "firebase": "^10.12.2",
     "lottie-web": "^5.13.0",
     "vue": "^3.4.29",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.3.3",
     "vue3-lottie": "^3.3.1"
   },
