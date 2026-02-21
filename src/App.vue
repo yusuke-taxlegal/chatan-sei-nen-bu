@@ -1,9 +1,9 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import { getAuth, signOut } from "firebase/auth";
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { getAuth, signOut } from 'firebase/auth'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
 const { user } = useAuth()
 const router = useRouter()
@@ -18,15 +18,17 @@ const closeMobileMenu = () => {
 }
 
 const handleLogout = () => {
-  const auth = getAuth();
-  signOut(auth).then(() => {
-    // Sign-out successful.
-    closeMobileMenu()
-    router.push('/login');
-  }).catch((error) => {
-    // An error happened.
-    console.error('Logout error:', error);
-  });
+  const auth = getAuth()
+  signOut(auth)
+    .then(() => {
+      // Sign-out successful.
+      closeMobileMenu()
+      router.push('/login')
+    })
+    .catch((error) => {
+      // An error happened.
+      console.error('Logout error:', error)
+    })
 }
 </script>
 
@@ -42,106 +44,123 @@ const handleLogout = () => {
           <span class="brand-sub">青年部</span>
         </div>
       </RouterLink>
-      
+
       <!-- ハンバーガーボタン（モバイル用） -->
-      <button class="mobile-menu-button" @click="toggleMobileMenu" :class="{ active: isMobileMenuOpen }">
+      <button
+        class="mobile-menu-button"
+        @click="toggleMobileMenu"
+        :class="{ active: isMobileMenuOpen }"
+      >
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
       </button>
-      
+
       <!-- デスクトップナビゲーション -->
       <nav class="smart-nav desktop-nav">
-          <!-- ログアウト時 -->
-          <template v-if="!user">
-            <RouterLink to="/" class="nav-item">
-              <span class="nav-icon">🏠</span>
-              <span class="nav-text">Home</span>
-            </RouterLink>
-            <RouterLink to="/members" class="nav-item">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">部員一覧</span>
-            </RouterLink>
-            <RouterLink to="/about" class="nav-item">
-              <span class="nav-icon">✨</span>
-              <span class="nav-text">登録</span>
-            </RouterLink>
-            <RouterLink to="/login" class="nav-item primary">
-              <span class="nav-icon">🔑</span>
-              <span class="nav-text">ログイン</span>
-            </RouterLink>
-          </template>
-          <!-- ログイン時 -->
-          <template v-else>
-            <RouterLink to="/" class="nav-item">
-              <span class="nav-icon">🏠</span>
-              <span class="nav-text">Home</span>
-            </RouterLink>
-            <RouterLink to="/mypage" class="nav-item">
-              <span class="nav-icon">👤</span>
-              <span class="nav-text">マイページ</span>
-            </RouterLink>
-            <RouterLink to="/members" class="nav-item">
-              <span class="nav-icon">👥</span>
-              <span class="nav-text">部員一覧</span>
-            </RouterLink>
-            <button @click="handleLogout" class="nav-item logout-btn">
-              <span class="nav-icon">🚪</span>
-              <span class="nav-text">ログアウト</span>
-            </button>
-          </template>
-        </nav>
+        <!-- ログアウト時 -->
+        <template v-if="!user">
+          <RouterLink to="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+          </RouterLink>
+          <RouterLink to="/members" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">部員一覧</span>
+          </RouterLink>
+          <RouterLink to="/about" class="nav-item">
+            <span class="nav-icon">✨</span>
+            <span class="nav-text">登録</span>
+          </RouterLink>
+          <RouterLink to="/login" class="nav-item primary">
+            <span class="nav-icon">🔑</span>
+            <span class="nav-text">ログイン</span>
+          </RouterLink>
+        </template>
+        <!-- ログイン時 -->
+        <template v-else>
+          <RouterLink to="/" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+          </RouterLink>
+          <RouterLink to="/mypage" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">マイページ</span>
+          </RouterLink>
+          <RouterLink to="/members" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span class="nav-text">部員一覧</span>
+          </RouterLink>
+          <button @click="handleLogout" class="nav-item logout-btn">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-text">ログアウト</span>
+          </button>
+        </template>
+      </nav>
+    </div>
+  </header>
+
+  <!-- モバイルメニューオーバーレイ -->
+  <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu"></div>
+
+  <!-- モバイルメニュー -->
+  <nav class="mobile-nav" :class="{ active: isMobileMenuOpen }">
+    <!-- ログアウト時 -->
+    <template v-if="!user">
+      <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </RouterLink>
+      <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text">部員一覧</span>
+      </RouterLink>
+      <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">✨</span>
+        <span class="nav-text">登録</span>
+      </RouterLink>
+      <RouterLink to="/login" class="mobile-nav-item primary" @click="closeMobileMenu">
+        <span class="nav-icon">🔑</span>
+        <span class="nav-text">ログイン</span>
+      </RouterLink>
+    </template>
+    <!-- ログイン時 -->
+    <template v-else>
+      <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </RouterLink>
+      <RouterLink to="/mypage" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">👤</span>
+        <span class="nav-text">マイページ</span>
+      </RouterLink>
+      <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text">部員一覧</span>
+      </RouterLink>
+      <button @click="handleLogout" class="mobile-nav-item logout-btn">
+        <span class="nav-icon">🚪</span>
+        <span class="nav-text">ログアウト</span>
+      </button>
+    </template>
+  </nav>
+
+  <main>
+    <RouterView />
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <RouterLink to="/terms" class="footer-link">利用規約</RouterLink>
+        <span class="footer-divider">|</span>
+        <RouterLink to="/privacy" class="footer-link">プライバシーポリシー</RouterLink>
       </div>
-    </header>
-
-    <!-- モバイルメニューオーバーレイ -->
-    <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu"></div>
-    
-    <!-- モバイルメニュー -->
-    <nav class="mobile-nav" :class="{ active: isMobileMenuOpen }">
-      <!-- ログアウト時 -->
-      <template v-if="!user">
-        <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-text">Home</span>
-        </RouterLink>
-        <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">👥</span>
-          <span class="nav-text">部員一覧</span>
-        </RouterLink>
-        <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">✨</span>
-          <span class="nav-text">登録</span>
-        </RouterLink>
-        <RouterLink to="/login" class="mobile-nav-item primary" @click="closeMobileMenu">
-          <span class="nav-icon">🔑</span>
-          <span class="nav-text">ログイン</span>
-        </RouterLink>
-      </template>
-      <!-- ログイン時 -->
-      <template v-else>
-        <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">🏠</span>
-          <span class="nav-text">Home</span>
-        </RouterLink>
-        <RouterLink to="/mypage" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">👤</span>
-          <span class="nav-text">マイページ</span>
-        </RouterLink>
-        <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
-          <span class="nav-icon">👥</span>
-          <span class="nav-text">部員一覧</span>
-        </RouterLink>
-        <button @click="handleLogout" class="mobile-nav-item logout-btn">
-          <span class="nav-icon">🚪</span>
-          <span class="nav-text">ログアウト</span>
-        </button>
-      </template>
-    </nav>
-
-    <main>
-      <RouterView />
-    </main>
+      <div class="footer-copyright">
+        &copy; {{ new Date().getFullYear() }} 北谷町商工会青年部. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
 </template>
 
 <style scoped>
@@ -237,7 +256,7 @@ main {
     background-color: white !important;
   }
 
-  /* 
+  /*
     印刷時にすべての要素の背景を透明にし、文字色を黒に強制します。
     !importantを使用して、他のスタイル指定を上書きします。
   */
@@ -347,38 +366,38 @@ main {
   .smart-header {
     padding: 0.75rem 1rem;
   }
-  
+
   .header-container {
     padding: 0;
     max-width: 100%;
     margin: 0;
   }
-  
+
   .brand-logo {
     padding: 0.75rem 1rem;
     gap: 0.75rem;
   }
-  
+
   .logo-icon {
     font-size: 1.5rem;
     width: 3rem;
     height: 3rem;
   }
-  
+
   .brand-main {
     font-size: 1.1rem;
     font-weight: 800;
   }
-  
+
   .brand-sub {
     font-size: 0.8rem;
     font-weight: 600;
   }
-  
+
   .smart-nav {
     gap: 0.5rem;
   }
-  
+
   .nav-item {
     padding: 0.75rem;
     font-size: 0.9rem;
@@ -388,11 +407,11 @@ main {
     align-items: center;
     justify-content: center;
   }
-  
+
   .nav-text {
     /* display: none; を削除 */
   }
-  
+
   .nav-icon {
     font-size: 1.5rem;
   }
@@ -402,31 +421,31 @@ main {
   .smart-header {
     padding: 0.5rem 0.75rem;
   }
-  
+
   .brand-logo {
     padding: 0.5rem 0.75rem;
     gap: 0.5rem;
   }
-  
+
   .logo-icon {
     width: 2.5rem;
     height: 2.5rem;
   }
-  
+
   .brand-main {
     font-size: 1rem;
   }
-  
+
   .brand-sub {
     font-size: 0.75rem;
   }
-  
+
   .nav-item {
     padding: 0.5rem;
     min-width: 2.5rem;
     min-height: 2.5rem;
   }
-  
+
   .nav-icon {
     font-size: 1.25rem;
   }
@@ -580,7 +599,7 @@ main {
   .desktop-nav {
     display: none;
   }
-  
+
   .mobile-menu-button {
     display: flex;
   }
@@ -592,17 +611,17 @@ main {
     width: 100%;
     right: -100%;
   }
-  
+
   .mobile-nav-item {
     padding: 1rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   .mobile-nav-item .nav-icon {
     font-size: 1.3rem;
     width: 1.8rem;
   }
-  
+
   .mobile-nav-item .nav-text {
     font-size: 1rem;
   }
@@ -610,5 +629,66 @@ main {
 
 main {
   padding: 0;
+  min-height: calc(100vh - 160px); /* Adjust height so footer is at bottom */
+}
+
+/* Footer Styles */
+.app-footer {
+  background: var(--color-background-mute);
+  border-top: 1px solid var(--color-border);
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.footer-link {
+  color: var(--vt-c-text-dark-2);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: var(--vt-c-brand);
+}
+
+.footer-divider {
+  color: var(--color-border);
+}
+
+.footer-copyright {
+  color: var(--vt-c-text-dark-2);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .footer-links {
+    gap: 0.5rem;
+  }
+  .footer-divider {
+    display: none;
+  }
+  .footer-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
 }
 </style>

@@ -1,71 +1,81 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { db } from '../firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import NotebookLMPromptGenerator from '../components/NotebookLMPromptGenerator.vue'
 
-const route = useRoute();
-const member = ref(null);
-const loading = ref(true);
+const route = useRoute()
+const member = ref(null)
+const loading = ref(true)
 
 const youtubeVideoId = computed(() => {
   if (!member.value || !member.value.youtube) {
-    return null;
+    return null
   }
-  const url = member.value.youtube;
-  let videoId = null;
+  const url = member.value.youtube
+  let videoId = null
   // youtube.com/watch?v=VIDEO_ID
-  const urlParams = new URLSearchParams(new URL(url).search);
-  videoId = urlParams.get('v');
+  const urlParams = new URLSearchParams(new URL(url).search)
+  videoId = urlParams.get('v')
   if (videoId) {
-    return videoId;
+    return videoId
   }
   // youtu.be/VIDEO_ID
-  const match = url.match(/youtu\.be\/([^&?]+)/);
+  const match = url.match(/youtu\.be\/([^&?]+)/)
   if (match) {
-    videoId = match[1];
+    videoId = match[1]
   }
-  return videoId;
-});
+  return videoId
+})
+
+const getSafeUrl = (url) => {
+  if (!url) return ''
+  const trimmedUrl = url.trim()
+  if (/^(javascript|data|vbscript):/i.test(trimmedUrl)) {
+    return '#unsafe'
+  }
+  return trimmedUrl
+}
 
 const getSNSPlatform = (url) => {
-  if (!url) return 'SNS';
-  if (url.includes('twitter.com') || url.includes('x.com')) return 'Twitter/X';
-  if (url.includes('instagram.com')) return 'Instagram';
-  if (url.includes('facebook.com')) return 'Facebook';
-  if (url.includes('linkedin.com')) return 'LinkedIn';
-  if (url.includes('tiktok.com')) return 'TikTok';
-  if (url.includes('youtube.com')) return 'YouTube';
-  return 'SNS';
-};
+  if (!url) return 'SNS'
+  if (url.includes('twitter.com') || url.includes('x.com')) return 'Twitter/X'
+  if (url.includes('instagram.com')) return 'Instagram'
+  if (url.includes('facebook.com')) return 'Facebook'
+  if (url.includes('linkedin.com')) return 'LinkedIn'
+  if (url.includes('tiktok.com')) return 'TikTok'
+  if (url.includes('youtube.com')) return 'YouTube'
+  return 'SNS'
+}
 
 onMounted(async () => {
   // ページが読み込まれたら確実にトップにスクロール
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  
-  const memberId = route.params.id;
-  const docRef = doc(db, 'profiles', memberId);
-  const docSnap = await getDoc(docRef);
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  const memberId = route.params.id
+  const docRef = doc(db, 'profiles', memberId)
+  const docSnap = await getDoc(docRef)
 
   if (docSnap.exists()) {
-    member.value = docSnap.data();
+    member.value = docSnap.data()
   } else {
-    console.log("No such document!");
+    console.log('No such document!')
   }
-  loading.value = false;
-});
+  loading.value = false
+})
 </script>
 
 <template>
   <div class="page-container">
     <div v-if="loading" class="loading-container">
-      <div 
+      <div
         class="loading-spinner"
         v-motion
         :initial="{ opacity: 0, scale: 0.5 }"
         :enter="{ opacity: 1, scale: 1, transition: { duration: 600 } }"
       ></div>
-      <p 
+      <p
         class="loading-text font-body"
         v-motion
         :initial="{ opacity: 0, y: 20 }"
@@ -74,8 +84,8 @@ onMounted(async () => {
         読み込み中...
       </p>
     </div>
-    <div 
-      v-else-if="member" 
+    <div
+      v-else-if="member"
       class="profile-card"
       data-aos="fade-up"
       data-aos-duration="800"
@@ -84,58 +94,48 @@ onMounted(async () => {
       :enter="{ opacity: 1, y: 0, scale: 1, transition: { delay: 200, duration: 800 } }"
     >
       <div class="profile-header">
-        <div 
+        <div
           class="profile-image-container"
           v-motion
           :initial="{ opacity: 0, scale: 0.8, rotate: -5 }"
           :enter="{ opacity: 1, scale: 1, rotate: 0, transition: { delay: 400, duration: 800 } }"
         >
-          <img :src="member.profileImageUrl || 'https://via.placeholder.com/200'" alt="プロフィール画像" class="profile-image-large"/>
+          <img
+            :src="member.profileImageUrl || 'https://via.placeholder.com/200'"
+            alt="プロフィール画像"
+            class="profile-image-large"
+          />
           <div class="image-glow"></div>
         </div>
-        <p 
-          v-if="member.phoneticName"
-          class="member-phonetic-name font-ui"
-        >
+        <p v-if="member.phoneticName" class="member-phonetic-name font-ui">
           {{ member.phoneticName }}
         </p>
-        <h1 
-          class="member-name font-display"
-        >
+        <h1 class="member-name font-display">
           {{ member.name }}
         </h1>
-        <p 
-          class="member-title font-ui"
-        >
-          部員プロフィール
-        </p>
+        <p class="member-title font-ui">部員プロフィール</p>
       </div>
-      
+
       <div class="profile-details">
-        <div 
-          class="detail-card"
-        >
+        <div class="detail-card">
           <div class="detail-icon">🏢</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">会社名</h3>
             <p class="detail-value font-body">{{ member.company || '未設定' }}</p>
           </div>
         </div>
-        
-        <div 
-          class="detail-card bio-card"
-        >
+
+        <div class="detail-card bio-card">
           <div class="detail-icon">📝</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">自己紹介・事業内容</h3>
-            <div class="detail-value bio font-body text-content">{{ member.bio || '未設定です' }}</div>
+            <div class="detail-value bio font-body text-content">
+              {{ member.bio || '未設定です' }}
+            </div>
           </div>
         </div>
 
-        <div 
-          v-if="member.needs"
-          class="detail-card"
-        >
+        <div v-if="member.needs" class="detail-card">
           <div class="detail-icon">🎯</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">どのようなニーズに対応できるか</h3>
@@ -143,21 +143,15 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div 
-          v-if="member.pastTransactions"
-          class="detail-card"
-        >
+        <div v-if="member.pastTransactions" class="detail-card">
           <div class="detail-icon">🤝</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">過去に青年部内で取引した事例</h3>
             <div class="detail-value text-content">{{ member.pastTransactions }}</div>
           </div>
         </div>
-        
-        <div 
-          v-if="member.providableInfo"
-          class="detail-card"
-        >
+
+        <div v-if="member.providableInfo" class="detail-card">
           <div class="detail-icon">💡</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">提供できる情報</h3>
@@ -165,10 +159,7 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div 
-          v-if="member.seekingInfo"
-          class="detail-card"
-        >
+        <div v-if="member.seekingInfo" class="detail-card">
           <div class="detail-icon">🔍</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">求めている情報</h3>
@@ -176,59 +167,63 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div 
-          v-if="member.website" 
-          class="detail-card"
-        >
+        <div v-if="member.website" class="detail-card">
           <div class="detail-icon">🌐</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">ウェブサイト</h3>
-            <a :href="member.website" target="_blank" class="detail-link font-body">{{ member.website }}</a>
+            <a :href="getSafeUrl(member.website)" target="_blank" class="detail-link font-body">{{
+              member.website
+            }}</a>
           </div>
         </div>
-        
-        <div 
-          v-if="member.sns" 
-          class="detail-card"
-        >
+
+        <div v-if="member.sns" class="detail-card">
           <div class="detail-icon">📢</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">SNS</h3>
-            <a :href="member.sns" target="_blank" class="detail-link font-body sns-link">
+            <a
+              :href="getSafeUrl(member.sns)"
+              target="_blank"
+              class="detail-link font-body sns-link"
+            >
               <span class="sns-icon">🔗</span>
               {{ getSNSPlatform(member.sns) }} でフォロー
             </a>
           </div>
         </div>
-        
-        <div 
-          v-if="member.youtube" 
-          class="detail-card"
-        >
+
+        <div v-if="member.youtube" class="detail-card">
           <div class="detail-icon">📺</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">YouTube</h3>
-            
+
             <!-- 動画が埋め込める場合 -->
             <div v-if="youtubeVideoId" class="youtube-embed-container">
-              <iframe 
-                :src="`https://www.youtube.com/embed/${youtubeVideoId}`" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              <iframe
+                :src="`https://www.youtube.com/embed/${youtubeVideoId}`"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
                 class="youtube-iframe"
               ></iframe>
             </div>
 
             <!-- 埋め込めない場合（チャンネルリンクなど） -->
-            <a v-else :href="member.youtube" target="_blank" class="detail-link font-body sns-link youtube-link">
+            <a
+              v-else
+              :href="getSafeUrl(member.youtube)"
+              target="_blank"
+              class="detail-link font-body sns-link youtube-link"
+            >
               <span class="sns-icon">▶️</span>
               チャンネルを見る
             </a>
           </div>
         </div>
-
       </div>
+
+      <!-- NotebookLM Prompt Generator Area -->
+      <NotebookLMPromptGenerator :member="member" />
     </div>
     <div v-else class="error-container">
       <div class="error-icon">⚠️</div>
@@ -265,8 +260,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -284,7 +283,6 @@ onMounted(async () => {
   overflow: visible;
   min-height: 100vh;
 }
-
 
 .profile-header {
   text-align: center;
@@ -370,7 +368,7 @@ onMounted(async () => {
   align-items: flex-start;
   gap: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .detail-card:hover {
@@ -457,7 +455,7 @@ onMounted(async () => {
 }
 
 .sns-link.youtube-link {
-  background: linear-gradient(135deg, #FF0000, #c40202);
+  background: linear-gradient(135deg, #ff0000, #c40202);
   box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
 }
 
@@ -519,7 +517,7 @@ onMounted(async () => {
   height: 20px;
 }
 
-.profile-section p, 
+.profile-section p,
 .profile-section a,
 .profile-section div.text-content {
   font-size: 1rem;
@@ -538,25 +536,25 @@ onMounted(async () => {
   .page-container {
     padding: 0;
   }
-  
+
   .profile-card {
     padding: 1.5rem 1rem;
     border-radius: 0;
   }
-  
+
   .profile-header {
     margin-bottom: 2rem;
   }
-  
+
   .profile-image-large {
     width: 150px;
     height: 150px;
   }
-  
+
   .member-name {
     font-size: 2rem;
   }
-  
+
   .detail-card {
     background: transparent !important;
     border: none !important;
@@ -568,7 +566,7 @@ onMounted(async () => {
     gap: 1rem;
     border-bottom: 1px solid var(--color-border) !important;
   }
-  
+
   .detail-card:hover {
     transform: none !important;
   }
@@ -592,11 +590,11 @@ onMounted(async () => {
   .detail-content {
     width: 100%;
   }
-  
+
   .detail-value {
     font-size: 1.2rem;
   }
-  
+
   .bio {
     font-size: 1.15rem;
     line-height: 1.8;
@@ -608,7 +606,7 @@ onMounted(async () => {
     margin-bottom: 0.75rem;
   }
 
-  .profile-section p, 
+  .profile-section p,
   .profile-section a,
   .profile-section div.text-content {
     font-size: 0.95rem;
