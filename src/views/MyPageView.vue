@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { auth, db, storage } from '../firebase'
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 import {
@@ -38,6 +38,41 @@ const needs = ref('')
 const pastTransactions = ref('')
 const providableInfo = ref('')
 const seekingInfo = ref('')
+
+// --- 閲覧/編集モード ---
+const isEditing = ref(false)
+
+const memberObj = computed(() => ({
+  name: userName.value,
+  phoneticName: phoneticName.value,
+  company: companyName.value,
+  bio: bio.value,
+  needs: needs.value,
+  pastTransactions: pastTransactions.value,
+  providableInfo: providableInfo.value,
+  seekingInfo: seekingInfo.value,
+  website: website.value,
+  sns: sns.value,
+  youtube: youtube.value,
+  profileImageUrl: profileImageUrl.value,
+}))
+
+const getSafeUrl = (url) => {
+  if (!url) return ''
+  const trimmedUrl = url.trim()
+  if (/^(javascript|data|vbscript):/i.test(trimmedUrl)) return '#unsafe'
+  return trimmedUrl
+}
+
+const getSNSPlatform = (url) => {
+  if (!url) return 'SNS'
+  if (url.includes('twitter.com') || url.includes('x.com')) return 'Twitter/X'
+  if (url.includes('instagram.com')) return 'Instagram'
+  if (url.includes('facebook.com')) return 'Facebook'
+  if (url.includes('linkedin.com')) return 'LinkedIn'
+  if (url.includes('tiktok.com')) return 'TikTok'
+  return 'SNS'
+}
 
 // --- パスワード変更用のState ---
 const currentPassword = ref('')
@@ -411,8 +446,105 @@ onMounted(async () => {
       <p class="page-subtitle">プロフィール情報を編集して、部員同士のつながりを深めましょう</p>
     </div>
 
-    <!-- Profile Card -->
-    <div class="card profile-card">
+    <!-- ===== 閲覧モード ===== -->
+    <div v-if="!isEditing" class="card profile-view-card">
+      <div class="view-header">
+        <div class="view-image-container">
+          <img
+            :src="profileImageUrl || 'https://via.placeholder.com/150'"
+            alt="プロフィール画像"
+            class="view-profile-image"
+          />
+        </div>
+        <p v-if="phoneticName" class="view-phonetic">{{ phoneticName }}</p>
+        <h2 class="view-name">{{ userName || '名前未設定' }}</h2>
+        <p class="view-company">{{ companyName || '' }}</p>
+      </div>
+
+      <div class="view-details">
+        <div v-if="bio" class="view-detail-card">
+          <div class="view-detail-icon">📝</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">自己紹介・事業内容</h3>
+            <div class="view-detail-value text-content">{{ bio }}</div>
+          </div>
+        </div>
+
+        <div v-if="needs" class="view-detail-card">
+          <div class="view-detail-icon">🎯</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">対応できるニーズ</h3>
+            <div class="view-detail-value text-content">{{ needs }}</div>
+          </div>
+        </div>
+
+        <div v-if="pastTransactions" class="view-detail-card">
+          <div class="view-detail-icon">🤝</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">過去に青年部内で取引した事例</h3>
+            <div class="view-detail-value text-content">{{ pastTransactions }}</div>
+          </div>
+        </div>
+
+        <div v-if="providableInfo" class="view-detail-card">
+          <div class="view-detail-icon">💡</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">提供できる情報</h3>
+            <div class="view-detail-value text-content">{{ providableInfo }}</div>
+          </div>
+        </div>
+
+        <div v-if="seekingInfo" class="view-detail-card">
+          <div class="view-detail-icon">🔍</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">求めている情報</h3>
+            <div class="view-detail-value text-content">{{ seekingInfo }}</div>
+          </div>
+        </div>
+
+        <div v-if="website" class="view-detail-card">
+          <div class="view-detail-icon">🌐</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">ウェブサイト</h3>
+            <a :href="getSafeUrl(website)" target="_blank" class="view-detail-link">{{
+              website
+            }}</a>
+          </div>
+        </div>
+
+        <div v-if="sns" class="view-detail-card">
+          <div class="view-detail-icon">📢</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">SNS</h3>
+            <a :href="getSafeUrl(sns)" target="_blank" class="view-detail-link"
+              >{{ getSNSPlatform(sns) }} - {{ sns }}</a
+            >
+          </div>
+        </div>
+
+        <div v-if="youtube" class="view-detail-card">
+          <div class="view-detail-icon">📺</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">YouTube</h3>
+            <a :href="getSafeUrl(youtube)" target="_blank" class="view-detail-link">{{
+              youtube
+            }}</a>
+          </div>
+        </div>
+      </div>
+
+      <button @click="isEditing = true" class="edit-profile-btn">✏️ 情報を修正する</button>
+    </div>
+
+    <!-- ===== 編集モード ===== -->
+    <div v-else class="card profile-card">
+      <div class="edit-mode-header">
+        <button @click="isEditing = false" class="back-to-view-btn">← プロフィールに戻る</button>
+        <h2 class="card-title" style="border-bottom: none; margin: 0; padding: 0">
+          プロフィール編集
+        </h2>
+      </div>
+
       <div class="profile-layout">
         <div class="image-section">
           <div class="image-preview-wrapper" @click="triggerFileInput">
@@ -539,21 +671,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <NotebookLMPromptGenerator
-      :member="{
-        name: userName,
-        phoneticName: phoneticName,
-        company: companyName,
-        bio: bio,
-        needs: needs,
-        pastTransactions: pastTransactions,
-        providableInfo: providableInfo,
-        seekingInfo: seekingInfo,
-        website: website,
-        sns: sns,
-        youtube: youtube,
-      }"
-    />
+    <NotebookLMPromptGenerator :member="memberObj" />
 
     <!-- Account Management Section -->
     <template v-if="authProvider === 'password'">
@@ -825,6 +943,159 @@ onMounted(async () => {
   color: #ef4444;
   margin: 1.5rem 0;
   line-height: 1.6;
+}
+
+/* ===== View Mode (Read-only Profile) ===== */
+.profile-view-card {
+  text-align: center;
+}
+
+.view-header {
+  margin-bottom: 2rem;
+}
+
+.view-image-container {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.view-profile-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--color-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.view-phonetic {
+  font-size: 0.9rem;
+  color: var(--vt-c-text-dark-2);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.view-name {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.25rem;
+}
+
+.view-company {
+  font-size: 1.1rem;
+  color: var(--vt-c-text-dark-2);
+}
+
+.view-details {
+  display: grid;
+  gap: 1rem;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.view-detail-card {
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+
+.view-detail-card:hover {
+  border-color: var(--vt-c-brand);
+}
+
+.view-detail-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  padding: 0.4rem;
+  background: var(--color-background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.view-detail-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.view-detail-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vt-c-text-dark-2);
+  margin-bottom: 0.4rem;
+}
+
+.view-detail-value {
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.view-detail-link {
+  color: var(--vt-c-brand);
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 0.95rem;
+}
+
+.view-detail-link:hover {
+  text-decoration: underline;
+}
+
+.edit-profile-btn {
+  display: inline-block;
+  padding: 0.9rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.edit-profile-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* ===== Edit Mode Header ===== */
+.edit-mode-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.back-to-view-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: var(--vt-c-text-dark-2);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.back-to-view-btn:hover {
+  color: var(--vt-c-brand);
+  border-color: var(--vt-c-brand);
 }
 
 /* Profile Section */
