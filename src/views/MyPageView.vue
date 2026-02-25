@@ -195,16 +195,28 @@ const saveProfile = async () => {
 
   let formattedWebsite = website.value
   let formattedSns = sns.value
+  let formattedTwitter = twitter.value
+  let formattedFacebook = facebook.value
+  let formattedInstagram = instagram.value
+  let formattedTiktok = tiktok.value
   let formattedYoutube = youtube.value
 
   try {
     formattedWebsite = validateAndFormatUrl(website.value)
     formattedSns = validateAndFormatUrl(sns.value)
+    formattedTwitter = validateAndFormatUrl(twitter.value)
+    formattedFacebook = validateAndFormatUrl(facebook.value)
+    formattedInstagram = validateAndFormatUrl(instagram.value)
+    formattedTiktok = validateAndFormatUrl(tiktok.value)
     formattedYoutube = validateAndFormatUrl(youtube.value)
 
     // 画面の入力欄も自動補完されたものに書き換える
     website.value = formattedWebsite
     sns.value = formattedSns
+    twitter.value = formattedTwitter
+    facebook.value = formattedFacebook
+    instagram.value = formattedInstagram
+    tiktok.value = formattedTiktok
     youtube.value = formattedYoutube
   } catch (error) {
     alert(error.message)
