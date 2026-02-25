@@ -57,6 +57,16 @@ const router = createRouter({
       name: 'forgot-password',
       component: () => import('../views/ForgotPasswordView.vue'),
     },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: () => import('../views/TermsView.vue'),
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('../views/PrivacyView.vue'),
+    },
   ],
 })
 
@@ -69,7 +79,7 @@ const getCurrentUser = () => {
         removeListener()
         resolve(user)
       },
-      reject
+      reject,
     )
   })
 }

@@ -1,5 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+
+// --- 入部年度の選択肢を生成（直近15年分） ---
+const currentYear = new Date().getFullYear()
+const enrollmentYearOptions = Array.from({ length: 15 }, (_, i) => currentYear - i)
 import { auth, db, storage } from '../firebase'
 import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 import {
@@ -21,13 +25,18 @@ import {
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import NotebookLMPromptGenerator from '../components/NotebookLMPromptGenerator.vue'
+import { getGraduationStatus } from '../utils/memberUtils'
 
 const userName = ref('')
 const phoneticName = ref('') // フリガナ用の新しいref
 const companyName = ref('')
 const bio = ref('') // 自己紹介と事業内容を統合
 const website = ref('')
-const sns = ref('')
+const sns = ref('') // 互換性のため残す
+const twitter = ref('')
+const facebook = ref('')
+const instagram = ref('')
+const tiktok = ref('')
 const youtube = ref('') // YouTubeリンク用の新しいref
 // const recentActivity = ref(''); // 削除
 const profileImageUrl = ref('')
@@ -38,6 +47,17 @@ const needs = ref('')
 const pastTransactions = ref('')
 const providableInfo = ref('')
 const seekingInfo = ref('')
+
+// --- 役職・入部年度・生年月日 ---
+const currentRole = ref('')
+const pastRoles = ref([])
+const enrollmentYear = ref('')
+const birthDate = ref('')
+
+// --- 卒部・Last Year判定 ---
+const graduationStatus = computed(() => getGraduationStatus(birthDate.value))
+const isGraduated = computed(() => graduationStatus.value.isGraduated)
+const isLastYear = computed(() => graduationStatus.value.isLastYear)
 
 // --- 閲覧/編集モード ---
 const isEditing = ref(false)
@@ -55,6 +75,10 @@ const memberObj = computed(() => ({
   sns: sns.value,
   youtube: youtube.value,
   profileImageUrl: profileImageUrl.value,
+  currentRole: currentRole.value,
+  pastRoles: pastRoles.value,
+  enrollmentYear: enrollmentYear.value,
+  birthDate: birthDate.value,
 }))
 
 const getSafeUrl = (url) => {
@@ -204,6 +228,10 @@ const saveProfile = async () => {
       bio: bio.value,
       website: formattedWebsite,
       sns: formattedSns,
+      twitter: formattedTwitter,
+      facebook: formattedFacebook,
+      instagram: formattedInstagram,
+      tiktok: formattedTiktok,
       youtube: formattedYoutube, // 保存データにYouTubeを追加
       // recentActivity: recentActivity.value, // 削除
       profileImageUrl: imageUrl,
@@ -212,6 +240,10 @@ const saveProfile = async () => {
       pastTransactions: pastTransactions.value,
       providableInfo: providableInfo.value,
       seekingInfo: seekingInfo.value,
+      currentRole: currentRole.value,
+      pastRoles: pastRoles.value,
+      enrollmentYear: enrollmentYear.value ? Number(enrollmentYear.value) : '',
+      birthDate: birthDate.value,
     }
 
     const profileRef = doc(db, 'profiles', user.uid)
@@ -426,6 +458,10 @@ onMounted(async () => {
       bio.value = [data.bio, data.businessContent].filter(Boolean).join('\\n\\n')
       website.value = data.website || ''
       sns.value = data.sns || ''
+      twitter.value = data.twitter || ''
+      facebook.value = data.facebook || ''
+      instagram.value = data.instagram || ''
+      tiktok.value = data.tiktok || ''
       youtube.value = data.youtube || '' // YouTubeリンクを読み込む
       // recentActivity.value = data.recentActivity || ''; // 削除
       profileImageUrl.value = data.profileImageUrl || ''
@@ -434,6 +470,10 @@ onMounted(async () => {
       pastTransactions.value = data.pastTransactions || ''
       providableInfo.value = data.providableInfo || ''
       seekingInfo.value = data.seekingInfo || ''
+      currentRole.value = data.currentRole || ''
+      pastRoles.value = data.pastRoles || data.roleHistory || []
+      enrollmentYear.value = data.enrollmentYear || ''
+      birthDate.value = data.birthDate || ''
     }
   }
 })
@@ -459,6 +499,18 @@ onMounted(async () => {
         <p v-if="phoneticName" class="view-phonetic">{{ phoneticName }}</p>
         <h2 class="view-name">{{ userName || '名前未設定' }}</h2>
         <p class="view-company">{{ companyName || '' }}</p>
+        <div
+          v-if="currentRole || pastRoles.length > 0 || enrollmentYear || isGraduated || isLastYear"
+          class="view-badges"
+        >
+          <span v-if="isGraduated" class="graduated-badge">🎓 卒部</span>
+          <span v-if="isLastYear" class="last-year-badge">🔥 Last Year</span>
+          <span v-if="currentRole" class="current-role-badge">🏅 現 {{ currentRole }}</span>
+          <span v-for="role in pastRoles" :key="role" class="past-role-badge"
+            >📜 {{ role }}経験</span
+          >
+          <span v-if="enrollmentYear" class="enrollment-badge">📅 {{ enrollmentYear }}年入部</span>
+        </div>
       </div>
 
       <div class="view-details">
@@ -512,13 +564,52 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div v-if="sns" class="view-detail-card">
+        <div v-if="twitter || facebook || instagram || tiktok || sns" class="view-detail-card">
           <div class="view-detail-icon">📢</div>
           <div class="view-detail-content">
             <h3 class="view-detail-label">SNS</h3>
-            <a :href="getSafeUrl(sns)" target="_blank" class="view-detail-link"
-              >{{ getSNSPlatform(sns) }} - {{ sns }}</a
-            >
+            <div class="sns-links-wrapper">
+              <a
+                v-if="twitter"
+                :href="getSafeUrl(twitter)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-twitter"
+                >𝕏 X (Twitter)</a
+              >
+              <a
+                v-if="facebook"
+                :href="getSafeUrl(facebook)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-facebook"
+                >📘 Facebook</a
+              >
+              <a
+                v-if="instagram"
+                :href="getSafeUrl(instagram)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-instagram"
+                >📸 Instagram</a
+              >
+              <a
+                v-if="tiktok"
+                :href="getSafeUrl(tiktok)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-tiktok"
+                >🎵 TikTok</a
+              >
+              <a
+                v-if="sns && !twitter && !facebook && !instagram && !tiktok"
+                :href="getSafeUrl(sns)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-other"
+                >🔗 その他SNS</a
+              >
+            </div>
           </div>
         </div>
 
@@ -591,6 +682,46 @@ onMounted(async () => {
                 placeholder="会社名を入力"
               />
             </div>
+            <div class="grid-col-2">
+              <div class="form-group">
+                <label for="currentRole">🏅 現在の役職</label>
+                <select id="currentRole" v-model="currentRole" class="form-select">
+                  <option value="">なし</option>
+                  <option value="部長">部長</option>
+                  <option value="副部長">副部長</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>📜 過去に経験した役職</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" value="部長" v-model="pastRoles" />
+                    <span class="checkbox-text">部長</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" value="副部長" v-model="pastRoles" />
+                    <span class="checkbox-text">副部長</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="grid-col-2">
+              <div class="form-group">
+                <label for="enrollmentYear">📅 入部年度</label>
+                <select id="enrollmentYear" v-model="enrollmentYear" class="form-select">
+                  <option value="">選択してください</option>
+                  <option v-for="y in enrollmentYearOptions" :key="y" :value="y">{{ y }}年</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="birthDate">🎂 生年月日</label>
+                <input type="date" id="birthDate" v-model="birthDate" class="form-input-date" />
+                <p v-if="isGraduated" class="graduated-hint">🎓 卒部対象です</p>
+                <p v-if="isLastYear" class="last-year-hint">
+                  🔥 青年部ラストイヤー（今年度卒部）です！
+                </p>
+              </div>
+            </div>
             <div class="form-group">
               <label for="bio">📝 自己紹介・事業内容</label>
               <textarea
@@ -647,12 +778,45 @@ onMounted(async () => {
                 />
               </div>
               <div class="form-group">
-                <label for="sns">📢 SNSリンク</label>
+                <label for="twitter">𝕏 X (旧Twitter)</label>
                 <input
                   type="url"
-                  id="sns"
-                  v-model="sns"
-                  placeholder="https://twitter.com/username"
+                  id="twitter"
+                  v-model="twitter"
+                  placeholder="https://twitter.com/..."
+                />
+              </div>
+            </div>
+
+            <div class="grid-col-2">
+              <div class="form-group">
+                <label for="facebook">📘 Facebook</label>
+                <input
+                  type="url"
+                  id="facebook"
+                  v-model="facebook"
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="instagram">📸 Instagram</label>
+                <input
+                  type="url"
+                  id="instagram"
+                  v-model="instagram"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+            </div>
+
+            <div class="grid-col-2">
+              <div class="form-group">
+                <label for="tiktok">🎵 TikTok</label>
+                <input
+                  type="url"
+                  id="tiktok"
+                  v-model="tiktok"
+                  placeholder="https://tiktok.com/@..."
                 />
               </div>
             </div>
@@ -988,6 +1152,174 @@ onMounted(async () => {
 .view-company {
   font-size: 1.1rem;
   color: var(--vt-c-text-dark-2);
+}
+
+.view-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.current-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #92400e;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.past-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--vt-c-text-dark-2);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+}
+
+.enrollment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vt-c-text-dark-2);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+}
+
+.graduated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #581c87;
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border: 1px solid #a855f7;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
+}
+
+.last-year-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #9f1239;
+  background: linear-gradient(135deg, #ffe4e6, #fecdd3);
+  border: 1px solid #f43f5e;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(244, 63, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+/* Date Input */
+.form-input-date {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  transition: border-color 0.2s;
+}
+
+.form-input-date:focus {
+  outline: none;
+  border-color: var(--vt-c-brand);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.graduated-hint {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #a855f7;
+  font-weight: 500;
+}
+
+.last-year-hint {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #f43f5e;
+  font-weight: 600;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.75rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--vt-c-brand);
+  cursor: pointer;
+}
+
+.checkbox-text {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Form Select */
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: auto;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--vt-c-brand);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .view-details {

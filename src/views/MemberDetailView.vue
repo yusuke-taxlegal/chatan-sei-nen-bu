@@ -9,6 +9,13 @@ const route = useRoute()
 const member = ref(null)
 const loading = ref(true)
 
+import { getGraduationStatus } from '../utils/memberUtils'
+
+// 卒部・Last Year判定
+const graduationStatus = computed(() => getGraduationStatus(member.value?.birthDate))
+const isGraduated = computed(() => graduationStatus.value.isGraduated)
+const isLastYear = computed(() => graduationStatus.value.isLastYear)
+
 const youtubeVideoId = computed(() => {
   if (!member.value || !member.value.youtube) {
     return null
@@ -113,6 +120,32 @@ onMounted(async () => {
         <h1 class="member-name font-display">
           {{ member.name }}
         </h1>
+        <div
+          v-if="
+            member.currentRole ||
+            (member.pastRoles && member.pastRoles.length > 0) ||
+            (member.roleHistory && member.roleHistory.length > 0) ||
+            member.enrollmentYear ||
+            isGraduated ||
+            isLastYear
+          "
+          class="member-badges"
+        >
+          <span v-if="isGraduated" class="graduated-badge">🎓 卒部</span>
+          <span v-if="isLastYear" class="last-year-badge">🔥 Last Year</span>
+          <span v-if="member.currentRole" class="current-role-badge"
+            >🏅 現 {{ member.currentRole }}</span
+          >
+          <span
+            v-for="role in member.pastRoles || member.roleHistory || []"
+            :key="role"
+            class="past-role-badge"
+            >📜 {{ role }}経験</span
+          >
+          <span v-if="member.enrollmentYear" class="enrollment-badge"
+            >📅 {{ member.enrollmentYear }}年入部</span
+          >
+        </div>
         <p class="member-title font-ui">部員プロフィール</p>
       </div>
 
@@ -177,18 +210,63 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div v-if="member.sns" class="detail-card">
+        <div
+          v-if="
+            member.twitter || member.facebook || member.instagram || member.tiktok || member.sns
+          "
+          class="detail-card"
+        >
           <div class="detail-icon">📢</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">SNS</h3>
-            <a
-              :href="getSafeUrl(member.sns)"
-              target="_blank"
-              class="detail-link font-body sns-link"
-            >
-              <span class="sns-icon">🔗</span>
-              {{ getSNSPlatform(member.sns) }} でフォロー
-            </a>
+            <div class="sns-links-wrapper">
+              <a
+                v-if="member.twitter"
+                :href="getSafeUrl(member.twitter)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-twitter"
+                >𝕏 X (Twitter)</a
+              >
+              <a
+                v-if="member.facebook"
+                :href="getSafeUrl(member.facebook)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-facebook"
+                >📘 Facebook</a
+              >
+              <a
+                v-if="member.instagram"
+                :href="getSafeUrl(member.instagram)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-instagram"
+                >📸 Instagram</a
+              >
+              <a
+                v-if="member.tiktok"
+                :href="getSafeUrl(member.tiktok)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-tiktok"
+                >🎵 TikTok</a
+              >
+              <a
+                v-if="
+                  member.sns &&
+                  !member.twitter &&
+                  !member.facebook &&
+                  !member.instagram &&
+                  !member.tiktok
+                "
+                :href="getSafeUrl(member.sns)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sns-btn sns-other"
+                >🔗 その他SNS</a
+              >
+            </div>
           </div>
         </div>
 
@@ -213,10 +291,10 @@ onMounted(async () => {
               v-else
               :href="getSafeUrl(member.youtube)"
               target="_blank"
-              class="detail-link font-body sns-link youtube-link"
+              class="sns-btn sns-youtube"
+              style="margin-top: 0.5rem"
             >
-              <span class="sns-icon">▶️</span>
-              チャンネルを見る
+              ▶️ チャンネルを見る
             </a>
           </div>
         </div>
@@ -354,6 +432,95 @@ onMounted(async () => {
   font-weight: 500;
 }
 
+.member-badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.current-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #92400e;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.past-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--vt-c-text-dark-2);
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+}
+
+.enrollment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--vt-c-text-dark-2);
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+}
+
+.last-year-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #9f1239;
+  background: linear-gradient(135deg, #ffe4e6, #fecdd3);
+  border: 1px solid #f43f5e;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+  animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(244, 63, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+.graduated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #581c87;
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border: 1px solid #a855f7;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
+}
+
 .profile-details {
   display: grid;
   gap: 1.5rem;
@@ -433,35 +600,58 @@ onMounted(async () => {
   font-style: italic;
   line-height: 1.7;
 }
+.sns-links-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
 
-.sns-link {
+.sns-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  color: white !important;
-  border-radius: 0.5rem;
-  text-decoration: none;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  color: #ffffff !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.sns-link:hover {
+.sns-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
-  background: linear-gradient(135deg, var(--vt-c-brand-hover), var(--vt-c-brand));
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  color: #ffffff !important;
 }
 
-.sns-link.youtube-link {
-  background: linear-gradient(135deg, #ff0000, #c40202);
-  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+.sns-twitter {
+  background-color: #0f1419;
 }
-
-.sns-link.youtube-link:hover {
-  background: linear-gradient(135deg, #e00, #b00);
-  box-shadow: 0 4px 16px rgba(255, 0, 0, 0.4);
+.sns-facebook {
+  background-color: #1877f2;
+}
+.sns-instagram {
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+}
+.sns-tiktok {
+  background-color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.sns-youtube {
+  background-color: #ff0000;
+}
+.sns-other {
+  background-color: #64748b;
 }
 
 .youtube-embed-container {
