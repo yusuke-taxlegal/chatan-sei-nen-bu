@@ -6,6 +6,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  currentUser: {
+    type: Object,
+    default: null,
+  },
   showGuide: {
     type: Boolean,
     default: true,
@@ -238,11 +242,12 @@ const profileSourceText = computed(() => {
   const today = new Date()
   const updatedDate = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`
 
-  return `# 部員プロフィール（AI用ソース）
+  return `# 【この部員さんのプロフィール】（AI用ソース）
 更新日：${updatedDate}
 
 【氏名】${formatValue(m.name)}（${formatValue(m.phoneticName)}）
 【会社名】${formatValue(m.company)}
+【業種】${formatValue(m.industry)}
 
 【自己紹介・事業内容】
 ${formatValue(m.bio)}
@@ -263,17 +268,13 @@ ${formatValue(m.seekingInfo)}
 - Web：${formatValue(m.website)}
 - SNS：${formatValue(m.sns)}
 - YouTube：${formatValue(m.youtube)}
-
-【補足（任意）】
-- 対象エリア/客層：（未入力）
-- 価格帯/最低ロット：（未入力）
-- 連絡手段：（未入力）`
+`
 })
 
-// B: Instruction Prompt (Updated for High Power Marketing)
+// B-1: Instruction Prompt (Updated for High Power Marketing)
 const instructionPrompt = computed(() => {
   return `あなたは「青年部のビジネスマッチングを加速する編集者兼マーケ担当」です。
-次の【AI用ソース】の情報“だけ”を根拠に、推測は「仮説」と明記して出力してください。
+追加したマーケティングソースと、以下の【この部員さんのプロフィール】の情報を根拠に、推測は「仮説」と明記して出力してください。
 
 ※複数事業がある場合は「事業A/B/C」に分け、最後に“共通の強み”をまとめてください。
 
@@ -292,11 +293,24 @@ const instructionPrompt = computed(() => {
 - 専門用語は噛み砕く。
 - 文章は堅すぎない（青年部の場に合うトーン）。
 - 箇条書きを多用し、読みやすく。
+${memberProfileBlock.value}`
+})
 
-【AI用ソース】
-- ハイパワーマーケティング エッセンス
-- 部員プロフィール情報源
-※両方を読んだ上で出力してください。`
+// B-2: Business Matching Prompt
+const businessMatchingPrompt = computed(() => {
+  return `あなたは「青年部のビジネスマッチングを加速する敏腕プロデューサー」です。
+以下の【この部員さんのプロフィール】と、NotebookLMにすでに記憶させている【私のプロフィール】の両方を読み込み、私たち２人が『どのようなシナジーや協業を生み出せるか』について、具体的なビジネスアイデアを提案してください。
+
+# 出力してほしいもの
+1) 私たちの掛け合わせによる最大の強み（どうしてこの2人だと相性が良いのか）
+2) 具体的な協業アイデア 3案（商品企画、紹介フロー、共同イベントなど。なぜそれが有効かの理由つき）
+3) 私が相手に最初に話しかけるときの「アイスブレイク・提案の切り出し方」の例（チャット等でそのまま送れる自然なトーン）
+
+# 出力ルール
+- 根拠に基づき、具体的で現実的な提案にすること。
+- 「相手の求めている情報」と「私の提供できる情報」の合致があれば必ず触れること。
+- 専門用語は噛み砕き、青年部の関係性に合った前向きで熱量のあるトーンで出力すること。
+${memberProfileBlock.value}`
 })
 
 // アイソメ・イエロー デザインシステム共通指示（両プロンプトで再利用）
@@ -441,7 +455,7 @@ const memberProfileBlock = computed(() => {
   if (!props.member) return ''
   const m = props.member
   return `
-【事業者プロフィール情報】
+【この部員さんのプロフィール】
 氏名：${formatValue(m.name)}（${formatValue(m.phoneticName)}）
 会社名：${formatValue(m.company)}
 自己紹介・事業内容：${formatValue(m.bio)}
@@ -580,7 +594,6 @@ const triggerToast = (msg) => {
         >
       </div>
 
-      <!-- Stepper Guidance -->
       <div class="guidance-steps">
         <div class="step">
           <div class="step-num">手順1</div>
@@ -591,13 +604,13 @@ const triggerToast = (msg) => {
         <div class="step">
           <div class="step-num">手順2</div>
           <div class="step-desc">
-            続けて<strong>【A-2】プロフィールソース</strong>をコピーし、同様にNotebookLMの「ソースを追加」→「テキスト」に貼り付けます。
+            続けて<strong>【A-2】この部員さんのプロフィール</strong>をコピーし、同様に追加します。
           </div>
         </div>
         <div class="step">
           <div class="step-num">手順3</div>
           <div class="step-desc">
-            最後に<strong>【B】依頼用プロンプト</strong>をコピーし、NotebookLM下部のチャット入力欄に貼り付けて送信します。
+            要望に合わせて<strong>【B-1】</strong>か<strong>【B-2】</strong>の依頼用プロンプトを選び、NotebookLM下部のチャット入力欄に貼り付けて送信します。
           </div>
         </div>
       </div>
@@ -626,14 +639,14 @@ const triggerToast = (msg) => {
         <div class="action-card">
           <div class="card-header">
             <span class="badge source-badge">ソース用</span>
-            <h4>【A-2】プロフィールソース</h4>
+            <h4>【A-2】この部員さんのプロフィール</h4>
           </div>
-          <p class="desc">AIに読ませるための基本データです。</p>
+          <p class="desc">表示中メンバーの基本データです。</p>
           <button
-            @click="copyToClipboard(profileSourceText, '【A-2】プロフィールソース')"
+            @click="copyToClipboard(profileSourceText, '【A-2】この部員さんのプロフィール')"
             class="btn copy-btn primary-copy"
           >
-            <span class="btn-icon">📋</span> 【A-2】ソースをコピー
+            <span class="btn-icon">📋</span> 【A-2】クリップボードへ
           </button>
           <details class="preview-details">
             <summary>プレビューを見る</summary>
@@ -641,22 +654,46 @@ const triggerToast = (msg) => {
           </details>
         </div>
 
-        <!-- B: Prompt Box -->
+        <!-- B-1: Prompt Box -->
         <div class="action-card full-width">
           <div class="card-header">
             <span class="badge prompt-badge">依頼用</span>
-            <h4>【B】出力司令プロンプト</h4>
+            <h4>【B-1】事業分析・戦略依頼プロンプト</h4>
           </div>
-          <p class="desc">AIに紹介文やコラボ案を考えさせる指示書です。</p>
+          <p class="desc">相手の強み抽出や紹介文、コラボ案を出力させます。</p>
           <button
-            @click="copyToClipboard(instructionPrompt, '【B】依頼用プロンプト')"
+            @click="copyToClipboard(instructionPrompt, '【B-1】依頼用プロンプト')"
             class="btn copy-btn secondary-copy"
           >
-            <span class="btn-icon">✨</span> 【B】プロンプトをコピー
+            <span class="btn-icon">✨</span> 【B-1】プロンプトをコピー
           </button>
           <details class="preview-details">
             <summary>プレビューを見る</summary>
             <pre class="preview-text">{{ instructionPrompt }}</pre>
+          </details>
+        </div>
+
+        <!-- B-2: Business Matching Prompt Box -->
+        <div class="action-card full-width" style="border-color: #f59e0b">
+          <div class="card-header">
+            <span class="badge prompt-badge" style="background: #fef3c7; color: #d97706"
+              >協業提案</span
+            >
+            <h4>【B-2】ビジネスマッチング提案プロンプト 🔥</h4>
+          </div>
+          <p class="desc">
+            相手と「あなた」の情報を掛け合わせ、具体的なシナジーや協業アイデアをAIに提案させます。
+          </p>
+          <button
+            @click="copyToClipboard(businessMatchingPrompt, '【B-2】協業提案プロンプト')"
+            class="btn copy-btn secondary-copy"
+            style="background: linear-gradient(135deg, #f59e0b, #d97706)"
+          >
+            <span class="btn-icon">🤝</span> 【B-2】協業プロンプトをコピー
+          </button>
+          <details class="preview-details">
+            <summary>プレビューを見る</summary>
+            <pre class="preview-text">{{ businessMatchingPrompt }}</pre>
           </details>
         </div>
       </div>

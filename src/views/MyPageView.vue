@@ -22,14 +22,19 @@ import {
   linkWithPopup,
   deleteUser,
 } from 'firebase/auth'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import liff from '@line/liff'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import NotebookLMPromptGenerator from '../components/NotebookLMPromptGenerator.vue'
 import { getGraduationStatus } from '../utils/memberUtils'
+import QrcodeVue from 'qrcode.vue'
 
 const userName = ref('')
 const phoneticName = ref('') // フリガナ用の新しいref
 const companyName = ref('')
+const industry = ref('') // 新規: 業種
+const hobbies = ref('') // 新規: 趣味・関心
 const bio = ref('') // 自己紹介と事業内容を統合
 const website = ref('')
 const sns = ref('') // 互換性のため残す
@@ -59,6 +64,12 @@ const graduationStatus = computed(() => getGraduationStatus(birthDate.value))
 const isGraduated = computed(() => graduationStatus.value.isGraduated)
 const isLastYear = computed(() => graduationStatus.value.isLastYear)
 
+const getProfileUrl = computed(() => {
+  const user = auth.currentUser
+  if (!user) return ''
+  return `${window.location.origin}/member/${user.uid}`
+})
+
 // --- 閲覧/編集モード ---
 const isEditing = ref(false)
 
@@ -66,6 +77,8 @@ const memberObj = computed(() => ({
   name: userName.value,
   phoneticName: phoneticName.value,
   company: companyName.value,
+  industry: industry.value,
+  hobbies: hobbies.value,
   bio: bio.value,
   needs: needs.value,
   pastTransactions: pastTransactions.value,
@@ -133,6 +146,14 @@ const deleteError = ref('')
 // --- ログインプロバイダーのState ---
 const authProvider = ref('')
 // ---------------------------------
+
+// --- LINE連携用のState ---
+const isLINELinked = ref(false)
+const isLinkingLINE = ref(false)
+const isUnlinkingLINE = ref(false)
+const lineLinkMessage = ref('')
+const lineLinkError = ref('')
+// ---------------------------
 
 const selectedFile = ref(null)
 const fileInputRef = ref(null) // ファイル入力への参照
@@ -237,6 +258,8 @@ const saveProfile = async () => {
       name: userName.value,
       phoneticName: phoneticName.value, // 保存データにフリガナを追加
       company: companyName.value,
+      industry: industry.value, // 保存データに業種を追加
+      hobbies: hobbies.value, // 保存データに趣味を追加
       bio: bio.value,
       website: formattedWebsite,
       sns: formattedSns,
@@ -390,6 +413,68 @@ const linkWithGoogle = async () => {
   }
 }
 
+// --- LINE連携処理 ---
+const handleLinkLINE = async () => {
+  lineLinkMessage.value = ''
+  lineLinkError.value = ''
+  isLinkingLINE.value = true
+
+  try {
+    if (!liff.isLoggedIn()) {
+      // LIFFログイン画面へ遷移（リダイレクト）
+      liff.login({ redirectUri: window.location.href })
+      return // リダイレクトされるので以降は実行されない想定
+    }
+
+    // 既にログイン済みの場合はトークンを取得
+    const accessToken = liff.getAccessToken()
+    if (!accessToken) {
+      throw new Error('LINEのアクセストークンが取得できませんでした。')
+    }
+
+    const functions = getFunctions()
+    const linkLineAccountFn = httpsCallable(functions, 'linkLineAccount')
+    await linkLineAccountFn({ lineAccessToken: accessToken })
+
+    lineLinkMessage.value = 'LINEアカウントとの連携に成功しました！'
+    isLINELinked.value = true
+    localStorage.setItem('hasLinkedLINE', 'true')
+  } catch (error) {
+    console.error('LINE連携エラー:', error)
+    if (error.code === 'functions/already-exists') {
+      lineLinkError.value = 'このLINEアカウントは既に他のユーザーに紐付いています。'
+    } else {
+      lineLinkError.value = 'LINE連携に失敗しました。時間をおいて再度お試しください。'
+    }
+  } finally {
+    isLinkingLINE.value = false
+  }
+}
+
+const handleUnlinkLINE = async () => {
+  if (!confirm('本当にLINE連携を解除しますか？')) return
+
+  lineLinkMessage.value = ''
+  lineLinkError.value = ''
+  isUnlinkingLINE.value = true
+
+  try {
+    const functions = getFunctions()
+    const unlinkLineAccountFn = httpsCallable(functions, 'unlinkLineAccount')
+    await unlinkLineAccountFn()
+
+    lineLinkMessage.value = 'LINE連携を解除しました。'
+    isLINELinked.value = false
+    localStorage.removeItem('hasLinkedLINE')
+  } catch (error) {
+    console.error('LINE連携解除エラー:', error)
+    lineLinkError.value = 'LINE連携の解除に失敗しました。時間をおいて再度お試しください。'
+  } finally {
+    isUnlinkingLINE.value = false
+  }
+}
+// --------------------
+
 const handleDeleteAccount = async () => {
   deleteError.value = ''
   isDeleting.value = true
@@ -450,6 +535,26 @@ const handleDeleteAccount = async () => {
 }
 
 onMounted(async () => {
+  // LIFFの初期化
+  try {
+    await liff.init({ liffId: import.meta.env.VITE_LINE_LIFF_ID })
+
+    // LIFFログインからのリダイレクト戻り時、自動で連携処理を走らせる
+    const urlParams = new URLSearchParams(window.location.search)
+    if (
+      liff.isLoggedIn() &&
+      (urlParams.has('liff.state') || document.referrer.includes('line.me'))
+    ) {
+      // マイページを開いた時にすでにLINEログインセッションがあり、
+      // かつURLパラメータやリファラから「ログイン直後」と判断できる場合は連携を試みる
+      // （※この判定はユースケースに応じて調整）
+      // 一旦、明示的なボタン押下を待つ設計にするため自動実行はなし。
+      // ただし、login()から戻ってきた直後だとわかる場合は handleLinkLINE() を呼ぶ等が可能。
+    }
+  } catch (err) {
+    console.error('LIFF Initialization failed', err)
+  }
+
   const user = auth.currentUser
   if (user) {
     // ログインプロバイダーを特定
@@ -463,9 +568,16 @@ onMounted(async () => {
 
     if (docSnap.exists()) {
       const data = docSnap.data()
+      isLINELinked.value = !!data.lineUid // lineUidが存在していれば連携済み
+      if (isLINELinked.value) {
+        localStorage.setItem('hasLinkedLINE', 'true')
+      } else {
+        localStorage.removeItem('hasLinkedLINE')
+      }
       userName.value = data.name || ''
       phoneticName.value = data.phoneticName || '' // フリガナを読み込む
       companyName.value = data.company || ''
+      industry.value = data.industry || '' // 業種を読み込む
       // bioとbusinessContentを結合して読み込む
       bio.value = [data.bio, data.businessContent].filter(Boolean).join('\\n\\n')
       website.value = data.website || ''
@@ -510,7 +622,10 @@ onMounted(async () => {
         </div>
         <p v-if="phoneticName" class="view-phonetic">{{ phoneticName }}</p>
         <h2 class="view-name">{{ userName || '名前未設定' }}</h2>
-        <p class="view-company">{{ companyName || '' }}</p>
+        <p class="view-company">
+          {{ companyName || '' }}
+          <span v-if="industry" class="view-industry">({{ industry }})</span>
+        </p>
         <div
           v-if="currentRole || pastRoles.length > 0 || enrollmentYear || isGraduated || isLastYear"
           class="view-badges"
@@ -531,6 +646,25 @@ onMounted(async () => {
           <div class="view-detail-content">
             <h3 class="view-detail-label">自己紹介・事業内容</h3>
             <div class="view-detail-value text-content">{{ bio }}</div>
+          </div>
+        </div>
+
+        <div v-if="hobbies" class="view-detail-card">
+          <div class="view-detail-icon">🏕️</div>
+          <div class="view-detail-content">
+            <h3 class="view-detail-label">趣味・関心</h3>
+            <div class="hobbies-wrapper">
+              <span
+                v-for="(hobby, index) in hobbies
+                  .split(',')
+                  .map((h) => h.trim())
+                  .filter((h) => h)"
+                :key="index"
+                class="hobby-tag"
+              >
+                {{ hobby }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -636,6 +770,12 @@ onMounted(async () => {
         </div>
       </div>
 
+      <!-- 下部に配置したデジタル名刺（QRコード） -->
+      <div class="qr-code-section" v-if="getProfileUrl" style="margin-top: 2rem">
+        <QrcodeVue :value="getProfileUrl" :size="150" level="M" :margin="2" />
+        <p class="qr-hint">あなたのデジタル名刺<br />（カメラでスキャンしてプロフィールを共有）</p>
+      </div>
+
       <button @click="isEditing = true" class="edit-profile-btn">✏️ 情報を修正する</button>
     </div>
 
@@ -685,7 +825,7 @@ onMounted(async () => {
                 />
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group grid-col-2-span">
               <label for="companyName">🏢 会社名</label>
               <input
                 type="text"
@@ -693,6 +833,25 @@ onMounted(async () => {
                 v-model="companyName"
                 placeholder="会社名を入力"
               />
+            </div>
+            <div class="form-group grid-col-2-span">
+              <label for="industry">🏭 業種</label>
+              <select id="industry" v-model="industry" class="form-select">
+                <option value="">選択してください</option>
+                <option value="建設・建築業">建設・建築業</option>
+                <option value="製造業">製造業</option>
+                <option value="情報通信業（IT）">情報通信業（IT）</option>
+                <option value="運輸・物流業">運輸・物流業</option>
+                <option value="卸売・小売業">卸売・小売業</option>
+                <option value="宿泊・飲食サービス業">宿泊・飲食サービス業</option>
+                <option value="生活関連サービス・娯楽業">生活関連サービス・娯楽業</option>
+                <option value="教育・学習支援業">教育・学習支援業</option>
+                <option value="医療・福祉">医療・福祉</option>
+                <option value="金融・保険業">金融・保険業</option>
+                <option value="不動産業・物品賃貸業">不動産業・物品賃貸業</option>
+                <option value="士業・専門サービス業">士業・専門サービス業</option>
+                <option value="その他のサービス業">その他のサービス業</option>
+              </select>
             </div>
             <div class="grid-col-2">
               <div class="form-group">
@@ -740,8 +899,22 @@ onMounted(async () => {
                 id="bio"
                 v-model="bio"
                 rows="5"
-                placeholder="ご自身の事業や趣味、得意なことなどを自由に紹介してください"
+                placeholder="ご自身の事業や趣味などを自由に紹介してください"
               ></textarea>
+            </div>
+            <div class="form-group grid-col-2-span">
+              <label for="hobbies"
+                >🏕️ 趣味・関心
+                <span class="input-hint"
+                  >（複数ある場合はカンマ「,」で区切ってください）</span
+                ></label
+              >
+              <input
+                type="text"
+                id="hobbies"
+                v-model="hobbies"
+                placeholder="例）ゴルフ, キャンプ, サウナ, 釣り"
+              />
             </div>
             <div class="form-group">
               <label for="needs">🎯 どのようなニーズに対応できるか</label>
@@ -970,6 +1143,40 @@ onMounted(async () => {
           このアカウントはGoogleアカウントと連携しています。<br />メールアドレスやパスワードの変更は、ご利用のGoogleアカウント設定から行ってください。
         </p>
       </div>
+    </div>
+
+    <!-- LINE Account Link Section -->
+    <div class="card">
+      <h2 class="card-title">LINE アカウント連携</h2>
+      <p class="card-subtitle">
+        LINEアカウントと連携すると、「LINEでログイン」ボタンを使って簡単にログインできるようになります。
+      </p>
+
+      <div v-if="!isLINELinked">
+        <button @click="handleLinkLINE" class="save-button line-button" :disabled="isLinkingLINE">
+          <span v-if="isLinkingLINE" class="loader"></span>
+          <span v-else>📲 LINEアカウントと連携する</span>
+        </button>
+      </div>
+      <div v-else>
+        <div class="alert-message success" style="margin-top: 0; margin-bottom: 1.5rem">
+          LINEアカウントと連携済みです。次回からLINEでログインできます。
+        </div>
+        <button
+          @click="handleUnlinkLINE"
+          class="cropper-button secondary"
+          :disabled="isUnlinkingLINE"
+          style="width: 100%; border-color: #ef4444; color: #ef4444"
+        >
+          <span v-if="isUnlinkingLINE" class="loader" style="border-top-color: #ef4444"></span>
+          <span v-else>LINEアカウント連携を解除する</span>
+        </button>
+      </div>
+
+      <div v-if="lineLinkMessage && !isLINELinked" class="alert-message success">
+        {{ lineLinkMessage }}
+      </div>
+      <div v-if="lineLinkError" class="alert-message error">{{ lineLinkError }}</div>
     </div>
 
     <!-- Account Deletion Card -->
@@ -1352,6 +1559,34 @@ onMounted(async () => {
   transition: border-color 0.2s;
 }
 
+.qr-code-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--color-background-soft);
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-border);
+  grid-column: 1 / -1;
+}
+
+.qr-code-section canvas {
+  border-radius: 8px;
+  background: white;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.qr-hint {
+  font-size: 0.85rem;
+  color: var(--vt-c-text-dark-2);
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
 .view-detail-card:hover {
   border-color: var(--vt-c-brand);
 }
@@ -1572,6 +1807,34 @@ onMounted(async () => {
   gap: 1.25rem;
 }
 
+.input-hint {
+  font-size: 0.75rem;
+  color: var(--vt-c-text-dark-2);
+  font-weight: normal;
+}
+
+.hobbies-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.hobby-tag {
+  display: inline-block;
+  background-color: var(--vt-c-brand-tint);
+  color: var(--vt-c-brand);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(30, 58, 138, 0.2); /* IMPULSE Blue border */
+}
+
+@media (prefers-color-scheme: dark) {
+  /* ライトテーマを維持 */
+}
+
 .readonly-input {
   background-color: var(--color-background-mute) !important;
   cursor: default;
@@ -1613,6 +1876,15 @@ onMounted(async () => {
 }
 .google-icon {
   display: flex;
+}
+
+.line-button {
+  background: #06c755;
+  color: white;
+  width: 100%;
+}
+.line-button:hover {
+  background: #05b04b;
 }
 
 /* Alert & Info Messages */

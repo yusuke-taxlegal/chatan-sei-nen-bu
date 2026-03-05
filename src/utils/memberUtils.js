@@ -38,3 +38,20 @@ export const getGraduationStatus = (birthDateString) => {
     isLastYear: today >= lastYearStartDate && today < graduationDate,
   }
 }
+
+/**
+ * 生年月日から「学年（年度生まれ）」を計算する関数
+ * 日本の学校年度に合わせて、4月2日〜翌年4月1日を同じ学年とする（簡略化して4月1日〜翌年3月31日）
+ * 1〜3月生まれは前年の年数になる
+ * @param {string} birthDateString - 生年月日 (YYYY-MM-DD)
+ * @returns {number|null} 生まれ年度 (YYYY) または null
+ */
+export const getSchoolYear = (birthDateString) => {
+  if (!birthDateString) return null
+  const birth = new Date(birthDateString)
+  if (isNaN(birth.getTime())) return null
+
+  const birthYear = birth.getFullYear()
+  const birthMonth = birth.getMonth() + 1
+  return birthMonth >= 4 ? birthYear : birthYear - 1
+}

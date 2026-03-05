@@ -1,20 +1,34 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { db } from '../firebase'
+import { auth, db } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
+import { onAuthStateChanged } from 'firebase/auth'
 import NotebookLMPromptGenerator from '../components/NotebookLMPromptGenerator.vue'
 
 const route = useRoute()
 const member = ref(null)
 const loading = ref(true)
 
-import { getGraduationStatus } from '../utils/memberUtils'
+import { getGraduationStatus, getSchoolYear } from '../utils/memberUtils'
 
 // 卒部・Last Year判定
 const graduationStatus = computed(() => getGraduationStatus(member.value?.birthDate))
 const isGraduated = computed(() => graduationStatus.value.isGraduated)
 const isLastYear = computed(() => graduationStatus.value.isLastYear)
+
+// 同級生判定
+const currentUserSchoolYear = ref(null)
+const isCurrentUser = ref(false)
+const currentUserProfile = ref(null)
+
+const isClassmate = computed(() => {
+  if (isCurrentUser.value) return false
+  if (!member.value || !member.value.birthDate) return false
+  if (currentUserSchoolYear.value === null) return false
+  const targetSchoolYear = getSchoolYear(member.value.birthDate)
+  return targetSchoolYear !== null && currentUserSchoolYear.value === targetSchoolYear
+})
 
 const youtubeVideoId = computed(() => {
   if (!member.value || !member.value.youtube) {
@@ -61,6 +75,24 @@ onMounted(async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 
   const memberId = route.params.id
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      if (user.uid === memberId) {
+        isCurrentUser.value = true
+      } else {
+        const myDoc = await getDoc(doc(db, 'profiles', user.uid))
+        if (myDoc.exists()) {
+          const data = myDoc.data()
+          currentUserProfile.value = data
+          if (data.birthDate) {
+            currentUserSchoolYear.value = getSchoolYear(data.birthDate)
+          }
+        }
+      }
+    }
+  })
+
   const docRef = doc(db, 'profiles', memberId)
   const docSnap = await getDoc(docRef)
 
@@ -127,10 +159,12 @@ onMounted(async () => {
             (member.roleHistory && member.roleHistory.length > 0) ||
             member.enrollmentYear ||
             isGraduated ||
-            isLastYear
+            isLastYear ||
+            isClassmate
           "
           class="member-badges"
         >
+          <span v-if="isClassmate" class="classmate-badge">🤝 同級生</span>
           <span v-if="isGraduated" class="graduated-badge">🎓 卒部</span>
           <span v-if="isLastYear" class="last-year-badge">🔥 Last Year</span>
           <span v-if="member.currentRole" class="current-role-badge"
@@ -154,7 +188,12 @@ onMounted(async () => {
           <div class="detail-icon">🏢</div>
           <div class="detail-content">
             <h3 class="detail-label font-subheading">会社名</h3>
-            <p class="detail-value font-body">{{ member.company || '未設定' }}</p>
+            <p class="detail-value font-body">
+              {{ member.company || '未設定' }}
+              <span v-if="member.industry" class="member-industry-text"
+                >（{{ member.industry }}）</span
+              >
+            </p>
           </div>
         </div>
 
@@ -164,6 +203,25 @@ onMounted(async () => {
             <h3 class="detail-label font-subheading">自己紹介・事業内容</h3>
             <div class="detail-value bio font-body text-content">
               {{ member.bio || '未設定です' }}
+            </div>
+          </div>
+        </div>
+
+        <div v-if="member.hobbies" class="detail-card">
+          <div class="detail-icon">🏕️</div>
+          <div class="detail-content">
+            <h3 class="detail-label font-subheading">趣味・関心</h3>
+            <div class="hobbies-wrapper">
+              <span
+                v-for="(hobby, index) in member.hobbies
+                  .split(',')
+                  .map((h) => h.trim())
+                  .filter((h) => h)"
+                :key="index"
+                class="hobby-tag font-body"
+              >
+                {{ hobby }}
+              </span>
             </div>
           </div>
         </div>
@@ -301,7 +359,7 @@ onMounted(async () => {
       </div>
 
       <!-- NotebookLM Prompt Generator Area -->
-      <NotebookLMPromptGenerator :member="member" />
+      <NotebookLMPromptGenerator :member="member" :currentUser="currentUserProfile" />
     </div>
     <div v-else class="error-container">
       <div class="error-icon">⚠️</div>
@@ -521,6 +579,28 @@ onMounted(async () => {
   box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
 }
 
+.classmate-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+.member-industry-text {
+  font-size: 1rem;
+  color: var(--vt-c-text-dark-2);
+  display: inline-block;
+  font-weight: normal;
+  margin-left: 0.5rem;
+}
+
 .profile-details {
   display: grid;
   gap: 1.5rem;
@@ -541,7 +621,7 @@ onMounted(async () => {
 .detail-card:hover {
   border-color: var(--vt-c-brand);
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 12px 32px rgba(30, 58, 138, 0.15);
 }
 
 .detail-icon {
@@ -582,6 +662,28 @@ onMounted(async () => {
   border: none;
   font-size: 1.1rem;
   line-height: 1.7;
+}
+
+.hobbies-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.hobby-tag {
+  display: inline-block;
+  background-color: var(--vt-c-brand-tint);
+  color: var(--vt-c-brand);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(30, 58, 138, 0.2); /* IMPULSE Blue border */
+}
+
+@media (prefers-color-scheme: dark) {
+  /* ライトテーマ強制のため、一旦空にするか現状を変えない */
 }
 
 .bio-card {

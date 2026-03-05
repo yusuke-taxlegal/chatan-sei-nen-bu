@@ -3,11 +3,40 @@ import { RouterLink, RouterView } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { getAuth, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const { user } = useAuth()
 const router = useRouter()
 const isMobileMenuOpen = ref(false)
+
+// PWA Update State
+const needRefresh = ref(false)
+let updateSW = null
+
+onMounted(async () => {
+  // Check for PWA updates
+  if ('serviceWorker' in navigator) {
+    try {
+      const { registerSW } = await import('virtual:pwa-register')
+      updateSW = registerSW({
+        onNeedRefresh() {
+          needRefresh.value = true
+        },
+        onOfflineReady() {
+          console.log('App ready to work offline')
+        },
+      })
+    } catch (e) {
+      console.error('PWA registration error:', e)
+    }
+  }
+})
+
+const reloadPage = () => {
+  if (updateSW) {
+    updateSW(true)
+  }
+}
 
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -69,8 +98,8 @@ const handleLogout = () => {
             <span class="nav-text">部員一覧</span>
           </RouterLink>
           <RouterLink to="/about" class="nav-item">
-            <span class="nav-icon">✨</span>
-            <span class="nav-text">登録</span>
+            <span class="nav-icon">ℹ️</span>
+            <span class="nav-text">青年部とは</span>
           </RouterLink>
           <RouterLink to="/login" class="nav-item primary">
             <span class="nav-icon">🔑</span>
@@ -82,6 +111,10 @@ const handleLogout = () => {
           <RouterLink to="/" class="nav-item">
             <span class="nav-icon">🏠</span>
             <span class="nav-text">Home</span>
+          </RouterLink>
+          <RouterLink to="/about" class="nav-item">
+            <span class="nav-icon">ℹ️</span>
+            <span class="nav-text">青年部とは</span>
           </RouterLink>
           <RouterLink to="/mypage" class="nav-item">
             <span class="nav-icon">👤</span>
@@ -100,6 +133,20 @@ const handleLogout = () => {
     </div>
   </header>
 
+  <!-- PWA Update Notification -->
+  <div v-if="needRefresh" class="pwa-toast-container" role="alert">
+    <div class="pwa-toast">
+      <div class="pwa-message">
+        <span class="pwa-icon">✨</span>
+        新しいバージョンのアプリが利用可能です
+      </div>
+      <div class="pwa-buttons">
+        <button @click="reloadPage" class="pwa-button primary">更新する</button>
+        <button @click="needRefresh = false" class="pwa-button secondary">後で</button>
+      </div>
+    </div>
+  </div>
+
   <!-- モバイルメニューオーバーレイ -->
   <div v-if="isMobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu"></div>
 
@@ -116,8 +163,8 @@ const handleLogout = () => {
         <span class="nav-text">部員一覧</span>
       </RouterLink>
       <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">✨</span>
-        <span class="nav-text">登録</span>
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-text">青年部とは</span>
       </RouterLink>
       <RouterLink to="/login" class="mobile-nav-item primary" @click="closeMobileMenu">
         <span class="nav-icon">🔑</span>
@@ -129,6 +176,10 @@ const handleLogout = () => {
       <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
         <span class="nav-icon">🏠</span>
         <span class="nav-text">Home</span>
+      </RouterLink>
+      <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
+        <span class="nav-icon">ℹ️</span>
+        <span class="nav-text">青年部とは</span>
       </RouterLink>
       <RouterLink to="/mypage" class="mobile-nav-item" @click="closeMobileMenu">
         <span class="nav-icon">👤</span>
@@ -408,10 +459,6 @@ main {
     justify-content: center;
   }
 
-  .nav-text {
-    /* display: none; を削除 */
-  }
-
   .nav-icon {
     font-size: 1.5rem;
   }
@@ -689,6 +736,104 @@ main {
     width: 100%;
     text-align: center;
     padding: 0.5rem 0;
+  }
+}
+
+/* PWA Toast Styles */
+.pwa-toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pwa-toast {
+  background: var(--color-background-soft);
+  border: 1px solid var(--vt-c-brand);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 350px;
+  backdrop-filter: blur(10px);
+}
+
+.pwa-message {
+  font-weight: 600;
+  color: var(--color-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.pwa-icon {
+  font-size: 1.5rem;
+}
+
+.pwa-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.pwa-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.pwa-button.primary {
+  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.pwa-button.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.pwa-button.secondary {
+  background: transparent;
+  color: var(--vt-c-text-dark-2);
+  border: 1px solid var(--color-border);
+}
+
+.pwa-button.secondary:hover {
+  background: var(--color-background-mute);
+  color: var(--color-text);
+}
+
+@media (max-width: 480px) {
+  .pwa-toast-container {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+  }
+
+  .pwa-toast {
+    max-width: none;
+    width: 100%;
   }
 }
 </style>
