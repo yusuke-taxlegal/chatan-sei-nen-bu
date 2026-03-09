@@ -10,7 +10,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-base-icon.svg'],
+      includeAssets: ['img/icons/impulse_logo.jpg'],
       manifest: {
         name: '北谷町商工会青年部',
         short_name: '青年部',
@@ -21,15 +21,15 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'img/icons/manifest-icon-192.maskable.png',
+            src: 'img/icons/impulse_logo.jpg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any maskable',
           },
           {
-            src: 'img/icons/manifest-icon-512.maskable.png',
+            src: 'img/icons/impulse_logo.jpg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/jpeg',
             purpose: 'any maskable',
           },
         ],

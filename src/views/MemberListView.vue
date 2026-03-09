@@ -11,8 +11,6 @@ const currentTab = ref('active') // 'active' (現役) or 'alumni' (卒部生)
 
 const selectedIndustry = ref('')
 const selectedClassmateOnly = ref(false)
-const filterHasNeeds = ref(false)
-const filterHasSeeds = ref(false)
 const currentUserUid = ref(null)
 
 // 各メンバーに卒部・Last Year・同級生状態を付加した配列
@@ -62,12 +60,6 @@ const filteredMembers = computed(() => {
     if (selectedClassmateOnly.value) {
       if (!member.isClassmate && member.id !== currentUserUid.value) return false
     }
-
-    // 4. 「求む（ニーズ）」フィルター
-    if (filterHasNeeds.value && !member.needs) return false
-
-    // 5. 「できる（シーズ）」フィルター
-    if (filterHasSeeds.value && !member.providableInfo) return false
 
     return true
   })
@@ -178,22 +170,6 @@ onMounted(() => {
           </label>
           <span class="filter-label-text">🤝 同級生表示</span>
         </div>
-
-        <div class="filter-group checkbox-group">
-          <label class="toggle-switch">
-            <input type="checkbox" v-model="filterHasSeeds" />
-            <span class="slider"></span>
-          </label>
-          <span class="filter-label-text tag-label seeds-label">できる（シーズ）</span>
-        </div>
-
-        <div class="filter-group checkbox-group">
-          <label class="toggle-switch">
-            <input type="checkbox" v-model="filterHasNeeds" />
-            <span class="slider"></span>
-          </label>
-          <span class="filter-label-text tag-label needs-label">求む（ニーズ）</span>
-        </div>
       </div>
     </div>
 
@@ -262,18 +238,6 @@ onMounted(() => {
           </div>
           <div class="card-body" v-if="member.bio">
             <p class="business-content">{{ member.bio }}</p>
-          </div>
-
-          <!-- マッチングタグ（できる・求む） -->
-          <div class="card-tags" v-if="member.providableInfo || member.needs">
-            <div class="tag-row" v-if="member.providableInfo">
-              <span class="tag-label seeds-label">できる</span>
-              <p class="tag-text">{{ member.providableInfo }}</p>
-            </div>
-            <div class="tag-row" v-if="member.needs">
-              <span class="tag-label needs-label">求む</span>
-              <p class="tag-text">{{ member.needs }}</p>
-            </div>
           </div>
 
           <div
@@ -354,9 +318,7 @@ onMounted(() => {
         class="reset-filter-btn"
         @click="[
           (selectedIndustry = ''),
-          (selectedClassmateOnly = false),
-          (filterHasNeeds = false),
-          (filterHasSeeds = false),
+          (selectedClassmateOnly = false)
         ]"
       >
         フィルターをリセット
@@ -738,56 +700,6 @@ onMounted(() => {
 
 .card-sns {
   padding: 0 1.5rem 1rem 1.5rem;
-}
-
-/* マッチングタグのスタイル */
-.card-tags {
-  padding: 0 1.5rem 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.tag-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  background: var(--color-background);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-}
-
-.tag-label {
-  flex-shrink: 0;
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  color: white;
-}
-
-.seeds-label {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
-}
-
-.needs-label {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
-}
-
-.tag-text {
-  margin: 0;
-  color: var(--color-text);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .sns-links-wrapper {

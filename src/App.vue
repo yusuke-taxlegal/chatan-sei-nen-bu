@@ -66,7 +66,7 @@ const handleLogout = () => {
     <div class="header-container">
       <RouterLink to="/" class="brand-logo">
         <div class="logo-icon">
-          <img src="https://i.ibb.co/RphNtfqb/P00018.jpg" alt="IMPULSE" class="impulse-logo" />
+          <img src="/img/icons/impulse_logo.jpg" alt="IMPULSE" class="impulse-logo" />
         </div>
         <div class="brand-text">
           <span class="brand-main">北谷町商工会</span>
