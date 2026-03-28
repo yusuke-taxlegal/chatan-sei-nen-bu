@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { auth, db } from '../firebase'
 import { collection, getDocs } from 'firebase/firestore'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -40,6 +40,22 @@ const processedMembers = computed(() => {
       isClassmate: isClassmate,
     }
   })
+})
+
+// 現在のタブに実際に存在する業種だけを抽出
+const availableIndustries = computed(() => {
+  const tabMembers = processedMembers.value.filter((member) => {
+    if (currentTab.value === 'active') return !member.isGraduated
+    return member.isGraduated
+  })
+  return [...new Set(tabMembers.map((m) => m.industry).filter(Boolean))].sort()
+})
+
+// タブ切り替え時、選択中の業種が新タブに存在しなければリセット
+watch(currentTab, () => {
+  if (selectedIndustry.value && !availableIndustries.value.includes(selectedIndustry.value)) {
+    selectedIndustry.value = ''
+  }
 })
 
 const filteredMembers = computed(() => {
@@ -146,30 +162,23 @@ onMounted(() => {
           <div class="select-wrapper">
             <select id="industry-filter" v-model="selectedIndustry" class="filter-select">
               <option value="">すべての業種</option>
-              <option value="建設・建築業">建設・建築業</option>
-              <option value="製造業">製造業</option>
-              <option value="情報通信業（IT）">情報通信業（IT）</option>
-              <option value="運輸・物流業">運輸・物流業</option>
-              <option value="卸売・小売業">卸売・小売業</option>
-              <option value="宿泊・飲食サービス業">宿泊・飲食サービス業</option>
-              <option value="生活関連サービス・娯楽業">生活関連サービス・娯楽業</option>
-              <option value="教育・学習支援業">教育・学習支援業</option>
-              <option value="医療・福祉">医療・福祉</option>
-              <option value="金融・保険業">金融・保険業</option>
-              <option value="不動産業・物品賃貸業">不動産業・物品賃貸業</option>
-              <option value="士業・専門サービス業">士業・専門サービス業</option>
-              <option value="その他のサービス業">その他のサービス業</option>
+              <option v-for="industry in availableIndustries" :key="industry" :value="industry">
+                {{ industry }}
+              </option>
             </select>
           </div>
         </div>
 
-        <div class="filter-group checkbox-group" v-if="currentUserUid">
-          <label class="toggle-switch">
-            <input type="checkbox" v-model="selectedClassmateOnly" />
-            <span class="slider"></span>
-          </label>
-          <span class="filter-label-text">🤝 同級生表示</span>
-        </div>
+        <button
+          v-if="currentUserUid"
+          class="classmate-toggle-btn"
+          :class="{ active: selectedClassmateOnly }"
+          @click="selectedClassmateOnly = !selectedClassmateOnly"
+        >
+          <span>🤝</span>
+          <span>同級生のみ表示</span>
+          <span class="toggle-state-label">{{ selectedClassmateOnly ? 'ON' : 'OFF' }}</span>
+        </button>
       </div>
     </div>
 
@@ -316,10 +325,7 @@ onMounted(() => {
       <p class="font-body">検索条件を変更して再度お試しください。</p>
       <button
         class="reset-filter-btn"
-        @click="[
-          (selectedIndustry = ''),
-          (selectedClassmateOnly = false)
-        ]"
+        @click="[(selectedIndustry = ''), (selectedClassmateOnly = false)]"
       >
         フィルターをリセット
       </button>
@@ -331,7 +337,7 @@ onMounted(() => {
       <div class="guide-banner-content">
         <h3 class="font-subheading">NotebookLM プロンプト自動生成機能のご案内</h3>
         <p class="font-body">
-          各部員の詳細ページの下部に、NotebookLMで使える「プロフィールソース」と「マーケティングプラン作成プロンプト」を自動生成するボタンを追加しました！<br />
+          各部員の詳細ページの下部に、NotebookLMで使える「プロフィールソース」と「販促プラン作成プロンプト」を自動生成するボタンを追加しました！<br />
           <strong>【応用編】</strong>
           さらにNotebookLMの<strong>「スタジオ機能（スライド資料、音声解説、インフォグラフィック）」</strong>を使えば、ボタン1つで高品質な完成資料が出来上がります。ぜひご活用ください！
         </p>
@@ -837,64 +843,47 @@ onMounted(() => {
   pointer-events: none;
 }
 
-/* トグルスイッチのスタイル */
-.checkbox-group {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 1rem;
+/* 同級生トグルボタン */
+.classmate-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 2rem;
-  border: 1px solid var(--color-border);
-}
-
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--color-border);
-  transition: 0.4s;
-  border-radius: 24px;
-}
-
-.slider:before {
-  position: absolute;
-  content: '';
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: var(--vt-c-brand);
-}
-
-input:checked + .slider:before {
-  transform: translateX(20px);
-}
-
-.filter-label-text {
+  border: 1.5px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
   font-weight: 600;
-  color: var(--color-heading);
   font-size: 0.95rem;
   cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.classmate-toggle-btn:hover {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.classmate-toggle-btn.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.toggle-state-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.05em;
+}
+
+.classmate-toggle-btn:not(.active) .toggle-state-label {
+  background: var(--color-border);
+  color: var(--vt-c-text-dark-2);
 }
 
 .member-industry-text {

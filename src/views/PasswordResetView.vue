@@ -1,59 +1,61 @@
 <script setup>
-import { ref } from 'vue';
-import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../firebase';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '../firebase'
+import { useRouter } from 'vue-router'
 
-const email = ref('');
-const router = useRouter();
-const resetMessage = ref('');
-const errorMessage = ref('');
-const isResetting = ref(false);
+const email = ref('')
+const router = useRouter()
+const resetMessage = ref('')
+const errorMessage = ref('')
+const isResetting = ref(false)
 
 const resetPassword = () => {
   if (!email.value) {
-    errorMessage.value = 'メールアドレスを入力してください。';
-    return;
+    errorMessage.value = 'メールアドレスを入力してください。'
+    return
   }
 
-  isResetting.value = true;
-  resetMessage.value = '';
-  errorMessage.value = '';
+  isResetting.value = true
+  resetMessage.value = ''
+  errorMessage.value = ''
 
   sendPasswordResetEmail(auth, email.value)
     .then(() => {
-      resetMessage.value = `${email.value} にパスワードリセット用のメールを送信しました。`;
-      isResetting.value = false;
-      
+      resetMessage.value = `${email.value} にパスワードリセット用のメールを送信しました。`
+      isResetting.value = false
+
       // 3秒後に成功ページに遷移
       setTimeout(() => {
-        router.push('/password-reset-sent');
-      }, 3000);
+        router.push('/password-reset-sent')
+      }, 3000)
     })
     .catch((error) => {
-      console.error('パスワードリセットエラー:', error);
-      isResetting.value = false;
-      
+      console.error('パスワードリセットエラー:', error)
+      isResetting.value = false
+
       if (error.code === 'auth/user-not-found') {
-        errorMessage.value = 'このメールアドレスで登録されたアカウントが見つかりません。';
+        errorMessage.value = 'このメールアドレスで登録されたアカウントが見つかりません。'
       } else if (error.code === 'auth/invalid-email') {
-        errorMessage.value = '有効なメールアドレスを入力してください。';
+        errorMessage.value = '有効なメールアドレスを入力してください。'
       } else if (error.code === 'auth/too-many-requests') {
-        errorMessage.value = 'リセット試行回数が多すぎます。しばらく時間をおいてからお試しください。';
+        errorMessage.value =
+          'リセット試行回数が多すぎます。しばらく時間をおいてからお試しください。'
       } else {
-        errorMessage.value = 'パスワードリセットに失敗しました。しばらく時間をおいてからお試しください。';
+        errorMessage.value =
+          'パスワードリセットに失敗しました。しばらく時間をおいてからお試しください。'
       }
-    });
-};
+    })
+}
 
 const goBackToLogin = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 </script>
 
 <template>
   <div class="auth-page-container">
-    <div 
+    <div
       class="auth-card"
       data-aos="fade-up"
       data-aos-duration="800"
@@ -61,7 +63,7 @@ const goBackToLogin = () => {
       :initial="{ opacity: 0, y: 50, scale: 0.9 }"
       :enter="{ opacity: 1, y: 0, scale: 1, transition: { delay: 200, duration: 800 } }"
     >
-      <h1 
+      <h1
         class="auth-title font-heading"
         v-motion
         :initial="{ opacity: 0, y: -20 }"
@@ -69,37 +71,37 @@ const goBackToLogin = () => {
       >
         パスワードリセット
       </h1>
-      
-      <p 
+
+      <p
         class="reset-description font-body"
         v-motion
         :initial="{ opacity: 0, y: 20 }"
         :enter="{ opacity: 1, y: 0, transition: { delay: 500, duration: 600 } }"
       >
-        登録時に使用したメールアドレスを入力してください。<br>
+        登録時に使用したメールアドレスを入力してください。<br />
         パスワードリセット用のリンクをお送りします。
       </p>
-      
-      <div 
+
+      <div
         class="form-group"
         v-motion
         :initial="{ opacity: 0, x: -30 }"
         :enter="{ opacity: 1, x: 0, transition: { delay: 600, duration: 600 } }"
       >
         <label for="email" class="font-ui">メールアドレス</label>
-        <input 
-          type="email" 
-          id="email" 
-          v-model="email" 
-          placeholder="email@example.com" 
+        <input
+          type="email"
+          id="email"
+          v-model="email"
+          placeholder="email@example.com"
           class="font-body"
           @keyup.enter="resetPassword"
         />
       </div>
-      
+
       <!-- エラーメッセージ -->
-      <div 
-        v-if="errorMessage" 
+      <div
+        v-if="errorMessage"
         class="message error"
         v-motion
         :initial="{ opacity: 0, y: 20 }"
@@ -107,10 +109,10 @@ const goBackToLogin = () => {
       >
         {{ errorMessage }}
       </div>
-      
+
       <!-- 成功メッセージ -->
-      <div 
-        v-if="resetMessage" 
+      <div
+        v-if="resetMessage"
         class="message success"
         v-motion
         :initial="{ opacity: 0, y: 20 }"
@@ -120,10 +122,10 @@ const goBackToLogin = () => {
         {{ resetMessage }}
         <div class="redirect-info">3秒後に確認ページに移動します...</div>
       </div>
-      
+
       <div class="button-group">
-        <button 
-          @click="resetPassword" 
+        <button
+          @click="resetPassword"
           :disabled="isResetting"
           class="auth-button primary font-ui"
           v-motion
@@ -132,9 +134,9 @@ const goBackToLogin = () => {
         >
           {{ isResetting ? '送信中...' : 'リセットメールを送信' }}
         </button>
-        
-        <button 
-          @click="goBackToLogin" 
+
+        <button
+          @click="goBackToLogin"
           class="auth-button secondary font-ui"
           v-motion
           :initial="{ opacity: 0, y: 30, scale: 0.9 }"
@@ -292,11 +294,11 @@ const goBackToLogin = () => {
     padding: 2rem 1.5rem;
     margin: 1rem;
   }
-  
+
   .auth-title {
     font-size: 1.5rem;
   }
-  
+
   .reset-description {
     font-size: 0.85rem;
   }

@@ -1,20 +1,20 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
 const goBackToLogin = () => {
-  router.push('/login');
-};
+  router.push('/login')
+}
 
 const goToPasswordReset = () => {
-  router.push('/password-reset');
-};
+  router.push('/password-reset')
+}
 </script>
 
 <template>
   <div class="auth-page-container">
-    <div 
+    <div
       class="auth-card"
       data-aos="fade-up"
       data-aos-duration="800"
@@ -22,7 +22,7 @@ const goToPasswordReset = () => {
       :initial="{ opacity: 0, y: 50, scale: 0.9 }"
       :enter="{ opacity: 1, y: 0, scale: 1, transition: { delay: 200, duration: 800 } }"
     >
-      <div 
+      <div
         class="success-content"
         v-motion
         :initial="{ opacity: 0, y: 30 }"
@@ -31,12 +31,12 @@ const goToPasswordReset = () => {
         <div class="success-icon">📧</div>
         <h1 class="auth-title font-heading">メール送信完了</h1>
         <p class="success-description font-body">
-          パスワードリセット用のメールを送信しました。<br>
+          パスワードリセット用のメールを送信しました。<br />
           メールボックスをご確認ください。
         </p>
       </div>
-      
-      <div 
+
+      <div
         class="info-box"
         v-motion
         :initial="{ opacity: 0, x: -30 }"
@@ -50,10 +50,10 @@ const goToPasswordReset = () => {
           <li>🔒 新しいパスワードは6文字以上で設定してください</li>
         </ul>
       </div>
-      
+
       <div class="button-group">
-        <button 
-          @click="goBackToLogin" 
+        <button
+          @click="goBackToLogin"
           class="auth-button primary font-ui"
           v-motion
           :initial="{ opacity: 0, y: 30, scale: 0.9 }"
@@ -61,9 +61,9 @@ const goToPasswordReset = () => {
         >
           ログインページに戻る
         </button>
-        
-        <button 
-          @click="goToPasswordReset" 
+
+        <button
+          @click="goToPasswordReset"
           class="auth-button secondary font-ui"
           v-motion
           :initial="{ opacity: 0, y: 30, scale: 0.9 }"
@@ -191,19 +191,19 @@ const goToPasswordReset = () => {
     padding: 2rem 1.5rem;
     margin: 1rem;
   }
-  
+
   .success-icon {
     font-size: 3rem;
   }
-  
+
   .auth-title {
     font-size: 1.5rem;
   }
-  
+
   .success-description {
     font-size: 0.9rem;
   }
-  
+
   .info-list li {
     font-size: 0.85rem;
   }

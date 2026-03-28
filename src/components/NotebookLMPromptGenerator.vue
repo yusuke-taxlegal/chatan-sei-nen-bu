@@ -273,8 +273,8 @@ ${formatValue(m.seekingInfo)}
 
 // B-1: Instruction Prompt (Updated for High Power Marketing)
 const instructionPrompt = computed(() => {
-  return `あなたは「青年部のビジネスマッチングを加速する編集者兼マーケ担当」です。
-追加したマーケティングソースと、以下の【この部員さんのプロフィール】の情報を根拠に、推測は「仮説」と明記して出力してください。
+  return `あなたは「青年部のビジネスマッチングを加速する編集者兼販促担当」です。
+追加した販促ソースと、以下の【この部員さんのプロフィール】の情報を根拠に、推測は「仮説」と明記して出力してください。
 
 ※複数事業がある場合は「事業A/B/C」に分け、最後に“共通の強み”をまとめてください。
 
@@ -285,7 +285,7 @@ const instructionPrompt = computed(() => {
 4) 強み・差別化：3つ（根拠となる記載も一緒に）
 5) 「紹介してほしい相手」の定義：3パターン（困りごと起点で）
 6) 青年部内コラボ案：3つ（相手業種例も付ける）
-7) 30日でできる“軽いマーケ施策”プラン（週ごと／コスト小さめ）
+7) 30日でできる“軽い販促施策”プラン（週ごと／コスト小さめ）
 8) 追加で聞くべき質問：5つ（優先度順）
 
 # 出力ルール
@@ -537,12 +537,12 @@ ${isometricYellowDesignSystem}
 
 // C-2: Audio Prompt
 const audioPrompt = computed(() => {
-  return `2人のマーケティングコンサルタントが、追加されたプロフィール情報をもとに『この事業者がどうすれば地域で突出した存在（別格）になれるか』を熱く議論するラジオ番組を作ってください。ハイパワーマーケティングの視点（USPとリスクリバーサル）を必ず交えてください。`
+  return `2人の販促コンサルタントが、追加されたプロフィール情報をもとに『この事業者がどうすれば地域で突出した存在（別格）になれるか』を熱く議論するラジオ番組を作ってください。ハイパワーマーケティングの視点（USPとリスクリバーサル）を必ず交えてください。`
 })
 
 // C-3: Infographic Prompt
 const infographicPrompt = computed(() => {
-  return `この事業者の『現状の課題』『独自の強み（USP）』『具体的なマーケティング施策（テスト・アドオンなど）』の3ステップを1枚の画像で直感的に伝えるインフォグラフィックを作成してください。専門用語は使わず、箇条書きで分かりやすく整理してください。`
+  return `この事業者の『現状の課題』『独自の強み（USP）』『具体的な販促施策（テスト・アドオンなど）』の3ステップを1枚の画像で直感的に伝えるインフォグラフィックを作成してください。専門用語は使わず、箇条書きで分かりやすく整理してください。`
 })
 
 // D: 万能プロンプト（そのまま使える1本）
@@ -582,7 +582,7 @@ const triggerToast = (msg) => {
       <summary class="generator-header">
         <div class="header-icon">🤖</div>
         <div class="header-texts">
-          <h3 class="font-subheading">NotebookLM用 プロンプト生成 (1時間セミナー向け)</h3>
+          <h3 class="font-subheading">NotebookLM用 プロンプト生成</h3>
           <p class="font-body subtitle">タップして手順とプロンプトを表示</p>
         </div>
         <span class="expand-indicator">▶</span>
@@ -598,7 +598,7 @@ const triggerToast = (msg) => {
         <div class="step">
           <div class="step-num">手順1</div>
           <div class="step-desc">
-            下の<strong>【A-1】マーケティングソース</strong>をコピーし、NotebookLMの「ソースを追加」→「テキスト」に貼り付けます。
+            下の<strong>【A-1】販促ソース</strong>をコピーし、NotebookLMの「ソースを追加」→「テキスト」に貼り付けます。
           </div>
         </div>
         <div class="step">
@@ -620,11 +620,11 @@ const triggerToast = (msg) => {
         <div class="action-card">
           <div class="card-header">
             <span class="badge source-badge">ソース用</span>
-            <h4>【A-1】マーケティングソース</h4>
+            <h4>【A-1】販促ソース</h4>
           </div>
           <p class="desc">ハイパワーマーケティングのノウハウ読本です。</p>
           <button
-            @click="copyToClipboard(marketingSourceText, '【A-1】マーケティングソース')"
+            @click="copyToClipboard(marketingSourceText, '【A-1】販促ソース')"
             class="btn copy-btn primary-copy"
           >
             <span class="btn-icon">📋</span> 【A-1】ソースをコピー
@@ -660,7 +660,7 @@ const triggerToast = (msg) => {
             <span class="badge prompt-badge">依頼用</span>
             <h4>【B-1】事業分析・戦略依頼プロンプト</h4>
           </div>
-          <p class="desc">相手の強み抽出や紹介文、コラボ案を出力させます。</p>
+          <p class="desc">強み・紹介文・青年部コラボ案・販促プランなどを一括出力させます。</p>
           <button
             @click="copyToClipboard(instructionPrompt, '【B-1】依頼用プロンプト')"
             class="btn copy-btn secondary-copy"
@@ -743,7 +743,7 @@ const triggerToast = (msg) => {
           <div class="feature-card">
             <div class="feature-icon">🎧</div>
             <h5>音声解説</h5>
-            <p>ラジオ番組のような対話形式で、強みやマーケティング案を音声化します。</p>
+            <p>ラジオ番組のような対話形式で、強みや販促案を音声化します。</p>
             <button
               @click="copyToClipboard(audioPrompt, '音声解説用プロンプト')"
               class="btn copy-btn studio-btn"

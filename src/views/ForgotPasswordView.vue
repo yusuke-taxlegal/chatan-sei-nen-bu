@@ -62,7 +62,7 @@ const handlePasswordReset = async () => {
             />
           </div>
         </div>
-        
+
         <button type="submit" class="submit-button" :disabled="isLoading">
           <span v-if="isLoading" class="loader"></span>
           <span v-else>再設定メールを送信</span>
@@ -156,7 +156,9 @@ const handlePasswordReset = async () => {
   background-color: var(--color-background);
   color: var(--color-text);
   font-size: 1rem;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .form-input:focus {
@@ -202,8 +204,12 @@ const handlePasswordReset = async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .alert-message {

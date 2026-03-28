@@ -10,24 +10,17 @@ const { user } = useAuth()
     <!-- メインヒーローセクション -->
     <section class="hero-section">
       <div class="hero-content">
-        
-        <h1 
-          class="hero-title font-display"
-        >
+        <h1 class="hero-title font-display">
           <span class="title-main">ビジネスネットワーキング</span>
           <span class="title-sub">の新しいかたち</span>
         </h1>
-        
-        <p 
-          class="hero-description font-body"
-        >
-          地域ビジネスの発展と交流を目指し、<br>
+
+        <p class="hero-description font-body">
+          地域ビジネスの発展と交流を目指し、<br />
           部員同士がつながり、共に成長していくためのプラットフォームです。
         </p>
-        
-        <div 
-          class="hero-buttons"
-        >
+
+        <div class="hero-buttons">
           <RouterLink to="/about" class="cta-button primary" v-if="!user">
             <span class="button-icon">✨</span>
             今すぐ参加する
@@ -42,40 +35,38 @@ const { user } = useAuth()
           </RouterLink>
         </div>
       </div>
-      
+
       <div class="hero-decoration">
-        <div 
-          class="floating-card card-1"
-        >
+        <div class="floating-card card-1">
           <div class="card-icon">🤝</div>
           <h3>ネットワーキング</h3>
           <p>部員同士のつながりを深める</p>
         </div>
-        
-        <div 
-          class="floating-card card-2"
-        >
+
+        <div class="floating-card card-2">
           <div class="card-icon">💼</div>
           <h3>ビジネス連携</h3>
           <p>新しいビジネス機会を創出</p>
         </div>
-        
-        <div 
-          class="floating-card card-3"
-        >
+
+        <div class="floating-card card-3">
           <div class="card-icon">🎆</div>
           <h3>地域貢献</h3>
           <p>北谷の発展を共に支える</p>
         </div>
       </div>
     </section>
-    
+
     <!-- About Section -->
     <section class="about-section">
       <div class="about-container">
         <div class="about-header">
-          <h2 class="section-title font-display">北谷町商工会青年部<br>部員情報共有システムについて</h2>
-          <p class="section-subtitle font-body">部員同士の「知る」を「つながる」に変えるプラットフォーム</p>
+          <h2 class="section-title font-display">
+            北谷町商工会青年部<br />部員情報共有システムについて
+          </h2>
+          <p class="section-subtitle font-body">
+            部員同士の「知る」を「つながる」に変えるプラットフォーム
+          </p>
         </div>
 
         <div class="about-grid">
@@ -141,17 +132,23 @@ const { user } = useAuth()
           <div class="steps-container">
             <div class="step-item">
               <div class="step-icon">1</div>
-              <p>アカウントを登録し、マイページでご自身のビジネスプロフィール（事業内容、提供できること、求めていること等）を入力します。</p>
+              <p>
+                アカウントを登録し、マイページでご自身のビジネスプロフィール（事業内容、提供できること、求めていること等）を入力します。
+              </p>
             </div>
             <div class="step-arrow">→</div>
             <div class="step-item">
               <div class="step-icon">2</div>
-              <p>部員一覧ページで、他のメンバーの顔写真や事業内容のプレビューを確認し、新たなビジネスの可能性を探します。</p>
+              <p>
+                部員一覧ページで、他のメンバーの顔写真や事業内容のプレビューを確認し、新たなビジネスの可能性を探します。
+              </p>
             </div>
             <div class="step-arrow">→</div>
             <div class="step-item">
               <div class="step-icon">3</div>
-              <p>気になる部員の詳細プロフィールを確認。より深い情報を基に、具体的な連携のアイデアを練ることができます。</p>
+              <p>
+                気になる部員の詳細プロフィールを確認。より深い情報を基に、具体的な連携のアイデアを練ることができます。
+              </p>
             </div>
           </div>
         </div>
@@ -163,9 +160,15 @@ const { user } = useAuth()
       <div class="gpts-container">
         <h2 class="section-title font-display">プロフィール作成をAIがサポート！</h2>
         <p class="section-subtitle font-body">
-          「何を書けばいいか分からない…」そんな方のために、対話形式で質問に答えるだけでプロフィールが完成するAIアシスタント (GPTs) をご用意しました。文章作成が苦手な方も、ぜひお気軽にご利用ください。
+          「何を書けばいいか分からない…」そんな方のために、対話形式で質問に答えるだけでプロフィールが完成するAIアシスタント
+          (GPTs) をご用意しました。文章作成が苦手な方も、ぜひお気軽にご利用ください。
         </p>
-        <a href="https://chatgpt.com/g/g-686e38248dd08191ab49db04c0ac3c8d-qing-nian-bu-hurohuiruzuo-cheng-kun?model=gpt-4o" target="_blank" rel="noopener noreferrer" class="gpts-button">
+        <a
+          href="https://chatgpt.com/g/g-686e38248dd08191ab49db04c0ac3c8d-qing-nian-bu-hurohuiruzuo-cheng-kun?model=gpt-4o"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="gpts-button"
+        >
           プロフィール作成アシスタントを使う
         </a>
       </div>
@@ -175,11 +178,16 @@ const { user } = useAuth()
     <section class="qr-code-section">
       <div class="qr-code-container">
         <h2 class="section-title-sm font-display">スマートフォンでアクセス</h2>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chatan-members-site.web.app" alt="QR Code" class="qr-code-image">
-        <p class="qr-code-text font-body">QRコードを読み取って、<br>いつでもどこでも部員情報をチェック！</p>
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://chatan-members-site.web.app"
+          alt="QR Code"
+          class="qr-code-image"
+        />
+        <p class="qr-code-text font-body">
+          QRコードを読み取って、<br />いつでもどこでも部員情報をチェック！
+        </p>
       </div>
     </section>
-
   </main>
 </template>
 
@@ -196,7 +204,11 @@ const { user } = useAuth()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at center, var(--color-background-soft) 0%, var(--color-background) 70%);
+  background: radial-gradient(
+    ellipse at center,
+    var(--color-background-soft) 0%,
+    var(--color-background) 70%
+  );
   overflow: hidden;
 }
 
@@ -207,10 +219,12 @@ const { user } = useAuth()
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(45deg, 
-    rgba(59, 130, 246, 0.1) 0%, 
-    transparent 50%, 
-    rgba(59, 130, 246, 0.05) 100%);
+  background: linear-gradient(
+    45deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    transparent 50%,
+    rgba(59, 130, 246, 0.05) 100%
+  );
   pointer-events: none;
 }
 
@@ -378,8 +392,13 @@ const { user } = useAuth()
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(2deg);
+  }
 }
 
 .card-icon {
@@ -482,9 +501,12 @@ const { user } = useAuth()
   margin-top: 0.25rem;
 }
 
-.icon-red { color: #ef4444; }
-.icon-blue { color: var(--vt-c-brand); }
-
+.icon-red {
+  color: #ef4444;
+}
+.icon-blue {
+  color: var(--vt-c-brand);
+}
 
 .task-list h4 {
   font-size: 1.125rem;
@@ -499,7 +521,6 @@ const { user } = useAuth()
   color: var(--vt-c-text-dark-2);
   margin: 0;
 }
-
 
 .how-it-works {
   background-color: var(--color-background);
@@ -660,68 +681,69 @@ const { user } = useAuth()
     min-height: 100vh;
     padding: 2rem 1rem;
   }
-  
+
   .hero-badge {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     margin-bottom: 2.5rem;
   }
-  
+
   .badge-icon {
     width: 2rem;
     height: 2rem;
   }
-  
+
   .hero-title {
     font-size: 3.5rem;
     margin-bottom: 2rem;
     line-height: 1.1;
   }
-  
-  .title-main, .title-sub {
+
+  .title-main,
+  .title-sub {
     display: block;
   }
-  
+
   .hero-description {
     font-size: 1.3rem;
     line-height: 1.6;
     margin-bottom: 3rem;
   }
-  
+
   .floating-card {
     display: none;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
   }
-  
+
   .cta-button {
     padding: 1rem 2.5rem;
     font-size: 1.1rem;
     width: 100%;
     max-width: 280px;
   }
-  
+
   .stats-container {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .stats-section {
     padding: 2rem 1rem;
   }
-  
+
   .stats-card {
     padding: 2rem 1.5rem;
   }
-  
+
   .stat-number {
     font-size: 2.5rem;
   }
-  
+
   .stat-label {
     font-size: 1.1rem;
   }
@@ -732,50 +754,50 @@ const { user } = useAuth()
     min-height: 100vh;
     padding: 1.5rem 1rem;
   }
-  
+
   .hero-content {
     padding: 0;
   }
-  
+
   .hero-badge {
     padding: 0.5rem 1.25rem;
     font-size: 0.9rem;
     margin-bottom: 2rem;
   }
-  
+
   .badge-icon {
     width: 1.75rem;
     height: 1.75rem;
   }
-  
+
   .hero-title {
     font-size: 2.8rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .hero-description {
     font-size: 1.1rem;
     margin-bottom: 2.5rem;
   }
-  
+
   .cta-button {
     padding: 0.875rem 2rem;
     font-size: 1rem;
     max-width: 250px;
   }
-  
+
   .stats-section {
     padding: 2rem 1rem;
   }
-  
+
   .stats-card {
     padding: 1.5rem 1rem;
   }
-  
+
   .stat-number {
     font-size: 2rem;
   }
-  
+
   .stat-label {
     font-size: 1rem;
   }
@@ -797,7 +819,7 @@ const { user } = useAuth()
     padding: 0 1cm !important;
     margin: 0 !important;
   }
-  
+
   /* Hide unnecessary elements */
   .hero-decoration,
   .hero-buttons {
@@ -825,7 +847,8 @@ const { user } = useAuth()
   }
 
   /* Adjust About section */
-  .about-section, .gpts-section {
+  .about-section,
+  .gpts-section {
     padding: 2rem 0;
     background: none;
     border: none;
@@ -843,15 +866,21 @@ const { user } = useAuth()
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
-  h1, h2, h3, h4, p, span, div {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  span,
+  div {
     color: #000 !important;
   }
-  
+
   .steps-container {
     flex-direction: column;
   }
-  
+
   .step-arrow {
     display: none;
   }
