@@ -4,6 +4,14 @@ import { useAuth } from '@/composables/useAuth'
 import { getAuth, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import {
+  HomeIcon,
+  UserGroupIcon,
+  InformationCircleIcon,
+  KeyIcon,
+  UserCircleIcon,
+  ArrowRightStartOnRectangleIcon,
+} from '@heroicons/vue/24/outline'
 
 const { user } = useAuth()
 const router = useRouter()
@@ -90,42 +98,42 @@ const handleLogout = () => {
         <!-- ログアウト時 -->
         <template v-if="!user">
           <RouterLink to="/" class="nav-item">
-            <span class="nav-icon">🏠</span>
+            <HomeIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">Home</span>
           </RouterLink>
           <RouterLink to="/members" class="nav-item">
-            <span class="nav-icon">👥</span>
+            <UserGroupIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">部員一覧</span>
           </RouterLink>
           <RouterLink to="/about" class="nav-item">
-            <span class="nav-icon">ℹ️</span>
+            <InformationCircleIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">青年部とは</span>
           </RouterLink>
           <RouterLink to="/login" class="nav-item primary">
-            <span class="nav-icon">🔑</span>
+            <KeyIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">ログイン</span>
           </RouterLink>
         </template>
         <!-- ログイン時 -->
         <template v-else>
           <RouterLink to="/" class="nav-item">
-            <span class="nav-icon">🏠</span>
+            <HomeIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">Home</span>
           </RouterLink>
           <RouterLink to="/about" class="nav-item">
-            <span class="nav-icon">ℹ️</span>
+            <InformationCircleIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">青年部とは</span>
           </RouterLink>
           <RouterLink to="/mypage" class="nav-item">
-            <span class="nav-icon">👤</span>
+            <UserCircleIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">マイページ</span>
           </RouterLink>
           <RouterLink to="/members" class="nav-item">
-            <span class="nav-icon">👥</span>
+            <UserGroupIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">部員一覧</span>
           </RouterLink>
-          <button @click="handleLogout" class="nav-item logout-btn">
-            <span class="nav-icon">🚪</span>
+          <button @click="handleLogout" class="nav-item logout-btn" type="button">
+            <ArrowRightStartOnRectangleIcon class="nav-svg" aria-hidden="true" />
             <span class="nav-text">ログアウト</span>
           </button>
         </template>
@@ -136,10 +144,7 @@ const handleLogout = () => {
   <!-- PWA Update Notification -->
   <div v-if="needRefresh" class="pwa-toast-container" role="alert">
     <div class="pwa-toast">
-      <div class="pwa-message">
-        <span class="pwa-icon">✨</span>
-        新しいバージョンのアプリが利用可能です
-      </div>
+      <div class="pwa-message">新しいバージョンのアプリが利用可能です</div>
       <div class="pwa-buttons">
         <button @click="reloadPage" class="pwa-button primary">更新する</button>
         <button @click="needRefresh = false" class="pwa-button secondary">後で</button>
@@ -155,42 +160,42 @@ const handleLogout = () => {
     <!-- ログアウト時 -->
     <template v-if="!user">
       <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">🏠</span>
+        <HomeIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">Home</span>
       </RouterLink>
       <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">👥</span>
+        <UserGroupIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">部員一覧</span>
       </RouterLink>
       <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">ℹ️</span>
+        <InformationCircleIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">青年部とは</span>
       </RouterLink>
       <RouterLink to="/login" class="mobile-nav-item primary" @click="closeMobileMenu">
-        <span class="nav-icon">🔑</span>
+        <KeyIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">ログイン</span>
       </RouterLink>
     </template>
     <!-- ログイン時 -->
     <template v-else>
       <RouterLink to="/" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">🏠</span>
+        <HomeIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">Home</span>
       </RouterLink>
       <RouterLink to="/about" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">ℹ️</span>
+        <InformationCircleIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">青年部とは</span>
       </RouterLink>
       <RouterLink to="/mypage" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">👤</span>
+        <UserCircleIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">マイページ</span>
       </RouterLink>
       <RouterLink to="/members" class="mobile-nav-item" @click="closeMobileMenu">
-        <span class="nav-icon">👥</span>
+        <UserGroupIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">部員一覧</span>
       </RouterLink>
-      <button @click="handleLogout" class="mobile-nav-item logout-btn">
-        <span class="nav-icon">🚪</span>
+      <button @click="handleLogout" class="mobile-nav-item logout-btn" type="button">
+        <ArrowRightStartOnRectangleIcon class="nav-svg" aria-hidden="true" />
         <span class="nav-text">ログアウト</span>
       </button>
     </template>
@@ -216,24 +221,29 @@ const handleLogout = () => {
 
 <style scoped>
 .smart-header {
-  background: linear-gradient(135deg, var(--color-background-soft), var(--color-background-mute));
+  background: var(--color-background-soft);
   border-bottom: 1px solid var(--color-border);
-  padding: 1rem 2rem;
+  padding: 0.625rem 1rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1600px;
+  max-width: 48rem;
   margin: 0 auto;
   width: 100%;
   padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .header-container {
+    padding: 0 1.25rem;
+  }
 }
 
 .brand-logo {
@@ -241,18 +251,19 @@ const handleLogout = () => {
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
   background: var(--color-background);
   border: 1px solid var(--color-border);
+  color: inherit;
 }
 
 .brand-logo:hover {
-  background: var(--color-background-soft);
   border-color: var(--vt-c-brand);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+  background: var(--color-background-soft);
 }
 
 .logo-icon {
@@ -328,84 +339,70 @@ main {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   text-decoration: none;
   color: var(--vt-c-text-dark-2);
   font-weight: 500;
-  font-size: 0.875rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.8125rem;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
-  position: relative;
-  overflow: hidden;
-}
-
-.nav-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-  transition: left 0.5s;
-}
-
-.nav-item:hover::before {
-  left: 100%;
 }
 
 .nav-item:hover {
   color: var(--vt-c-brand);
   background: var(--color-background);
   border-color: var(--color-border);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .nav-item.router-link-exact-active {
-  color: white;
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
+  color: #fff;
+  background: var(--vt-c-brand);
   border-color: var(--vt-c-brand);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
 }
 
 .nav-item.router-link-exact-active:hover {
-  background: linear-gradient(135deg, var(--vt-c-brand-hover), var(--vt-c-brand));
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  background: var(--vt-c-brand-hover);
+  color: #fff;
 }
 
 .nav-item.primary {
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  color: white;
+  background: var(--vt-c-brand);
+  color: #fff;
   border-color: var(--vt-c-brand);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
 }
 
 .nav-item.primary:hover {
-  background: linear-gradient(135deg, var(--vt-c-brand-hover), var(--vt-c-brand));
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: var(--vt-c-brand-hover);
+  color: #fff;
+}
+
+.nav-item.primary .nav-svg,
+.nav-item.router-link-exact-active .nav-svg {
+  color: #fff;
 }
 
 .nav-item.logout-btn {
-  background: var(--color-background);
-  border-color: var(--color-border);
+  background: transparent;
+  border-color: transparent;
 }
 
 .nav-item.logout-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
-.nav-icon {
-  font-size: 1rem;
+.nav-svg {
+  width: 1.125rem;
+  height: 1.125rem;
   flex-shrink: 0;
 }
 
@@ -415,7 +412,7 @@ main {
 
 @media (max-width: 768px) {
   .smart-header {
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
   }
 
   .header-container {
@@ -425,76 +422,43 @@ main {
   }
 
   .brand-logo {
-    padding: 0.75rem 1rem;
-    gap: 0.75rem;
+    padding: 0.375rem 0.5rem;
+    gap: 0.5rem;
+    min-height: 44px;
   }
 
   .logo-icon {
-    font-size: 1.5rem;
-    width: 3rem;
-    height: 3rem;
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .brand-main {
-    font-size: 1.1rem;
-    font-weight: 800;
+    font-size: 0.9375rem;
+    font-weight: 700;
   }
 
   .brand-sub {
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
-
-  .smart-nav {
-    gap: 0.5rem;
-  }
-
-  .nav-item {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-    min-width: 3rem;
-    min-height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-icon {
-    font-size: 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
   }
 }
 
 @media (max-width: 480px) {
   .smart-header {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .brand-logo {
-    padding: 0.5rem 0.75rem;
-    gap: 0.5rem;
-  }
-
-  .logo-icon {
-    width: 2.5rem;
-    height: 2.5rem;
+    padding: 0.5rem 0.625rem;
   }
 
   .brand-main {
-    font-size: 1rem;
+    font-size: 0.875rem;
   }
 
   .brand-sub {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
   }
 
-  .nav-item {
-    padding: 0.5rem;
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-  }
-
-  .nav-icon {
-    font-size: 1.25rem;
+  .logo-icon {
+    width: 2rem;
+    height: 2rem;
   }
 }
 
@@ -503,20 +467,21 @@ main {
   display: none;
   flex-direction: column;
   justify-content: space-around;
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   background: transparent;
-  border: none;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
   cursor: pointer;
-  padding: 0;
+  padding: 0.5rem;
   z-index: 1001;
 }
 
 .hamburger-line {
   width: 100%;
   height: 2px;
-  background: var(--color-text);
-  transition: all 0.3s ease;
+  background: var(--color-heading);
+  transition: all 0.2s ease;
   transform-origin: center;
 }
 
@@ -549,15 +514,15 @@ main {
   position: fixed;
   top: 0;
   right: -320px;
-  width: 300px;
+  width: min(100%, 300px);
   height: 100%;
-  background: linear-gradient(145deg, var(--color-background-soft), var(--color-background-mute));
+  background: var(--color-background);
   border-left: 1px solid var(--color-border);
-  padding: 5rem 0 2rem 0;
-  transition: right 0.3s ease;
+  padding: 4.5rem 0 1.5rem;
+  transition: right 0.25s ease;
   z-index: 1000;
   overflow-y: auto;
-  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.35);
 }
 
 .mobile-nav.active {
@@ -567,52 +532,56 @@ main {
 .mobile-nav-item {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  padding: 1.2rem 1.5rem;
-  margin: 0.25rem 0;
+  gap: 0.875rem;
+  padding: 0.875rem 1.25rem;
+  margin: 0.125rem 0;
   text-decoration: none;
   color: var(--color-text);
   background: transparent;
   border: none;
   width: 100%;
   text-align: left;
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  font-size: 1rem;
   font-weight: 500;
-  border-left: 4px solid transparent;
-  min-height: 3.5rem;
+  border-left: 3px solid transparent;
+  min-height: 48px;
 }
 
 .mobile-nav-item:hover {
-  background: var(--color-background);
+  background: var(--color-background-soft);
   border-left-color: var(--vt-c-brand);
-  padding-left: 2rem;
 }
 
 .mobile-nav-item.router-link-exact-active {
-  background: linear-gradient(90deg, var(--color-background), var(--color-background-soft));
+  background: var(--color-background-soft);
   border-left-color: var(--vt-c-brand);
   color: var(--vt-c-brand);
   font-weight: 600;
 }
 
 .mobile-nav-item.primary {
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  color: white;
-  margin: 1rem 1rem 0.5rem 1rem;
+  background: var(--vt-c-brand);
+  color: #fff;
+  margin: 0.75rem 1rem 0.5rem;
   border-radius: 0.5rem;
   border-left: none;
   font-weight: 600;
 }
 
 .mobile-nav-item.primary .nav-text {
-  color: white;
+  color: #fff;
   font-weight: 600;
 }
 
 .mobile-nav-item.primary:hover {
-  background: linear-gradient(135deg, var(--vt-c-brand-hover), var(--vt-c-brand));
-  padding-left: 1.5rem;
+  background: var(--vt-c-brand-hover);
+}
+
+.mobile-nav-item.primary .nav-svg {
+  color: #fff;
 }
 
 .mobile-nav-item.logout-btn {
@@ -626,15 +595,14 @@ main {
   border-left-color: #ef4444;
 }
 
-.mobile-nav-item .nav-icon {
-  font-size: 1.4rem;
-  width: 2rem;
-  text-align: center;
+.mobile-nav-item .nav-svg {
+  width: 1.375rem;
+  height: 1.375rem;
   flex-shrink: 0;
 }
 
 .mobile-nav-item .nav-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   flex: 1;
   color: inherit;
@@ -660,17 +628,12 @@ main {
   }
 
   .mobile-nav-item {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-  }
-
-  .mobile-nav-item .nav-icon {
-    font-size: 1.3rem;
-    width: 1.8rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
   }
 
   .mobile-nav-item .nav-text {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 }
 
@@ -681,19 +644,21 @@ main {
 
 /* Footer Styles */
 .app-footer {
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   border-top: 1px solid var(--color-border);
-  padding: 2rem 1rem;
-  margin-top: 3rem;
+  padding: 1.5rem 1rem;
+  margin-top: 2rem;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 48rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .footer-links {
@@ -760,30 +725,22 @@ main {
 }
 
 .pwa-toast {
-  background: var(--color-background-soft);
-  border: 1px solid var(--vt-c-brand);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.875rem;
   max-width: 350px;
-  backdrop-filter: blur(10px);
 }
 
 .pwa-message {
   font-weight: 600;
   color: var(--color-heading);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-
-.pwa-icon {
-  font-size: 1.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 .pwa-buttons {
@@ -802,15 +759,13 @@ main {
 }
 
 .pwa-button.primary {
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  color: white;
+  background: var(--vt-c-brand);
+  color: #fff;
   border: none;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .pwa-button.primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  background: var(--vt-c-brand-hover);
 }
 
 .pwa-button.secondary {

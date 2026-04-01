@@ -333,7 +333,7 @@ onMounted(() => {
 
     <!-- NotebookLM Guide Banner -->
     <div class="guide-banner" data-aos="fade-up" data-aos-duration="800">
-      <div class="guide-banner-icon">🤖</div>
+      <div class="guide-banner-mark" aria-hidden="true" />
       <div class="guide-banner-content">
         <h3 class="font-subheading">NotebookLM プロンプト自動生成機能のご案内</h3>
         <p class="font-body">
@@ -987,18 +987,21 @@ onMounted(() => {
 
 .guide-banner {
   margin-top: 3rem;
-  background: linear-gradient(135deg, var(--color-background-soft), #e3f2fd);
-  border: 1px solid #90caf9;
-  border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  gap: 1.25rem;
 }
 
-.guide-banner-icon {
-  font-size: 3rem;
+.guide-banner-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--vt-c-brand-tint);
+  border: 1px solid rgba(59, 130, 246, 0.25);
   flex-shrink: 0;
 }
 
@@ -1014,14 +1017,6 @@ onMounted(() => {
   font-size: 1rem;
   color: var(--color-text);
   line-height: 1.6;
-}
-
-/* Dark mode adjustments for guide banner */
-@media (prefers-color-scheme: dark) {
-  .guide-banner {
-    background: linear-gradient(135deg, var(--color-background-soft), #1e3a5f);
-    border-color: #1976d2;
-  }
 }
 
 @media (max-width: 768px) {

@@ -7,52 +7,37 @@ const { user } = useAuth()
 
 <template>
   <main class="home-container">
-    <!-- メインヒーローセクション -->
     <section class="hero-section">
       <div class="hero-content">
+        <p class="hero-kicker">コミュニティ</p>
         <h1 class="hero-title font-display">
           <span class="title-main">ビジネスネットワーキング</span>
           <span class="title-sub">の新しいかたち</span>
         </h1>
 
         <p class="hero-description font-body">
-          地域ビジネスの発展と交流を目指し、<br />
-          部員同士がつながり、共に成長していくためのプラットフォームです。
+          地域ビジネスの発展と交流を目指し、部員同士がつながり、共に成長していくためのプラットフォームです。
         </p>
 
         <div class="hero-buttons">
-          <RouterLink to="/about" class="cta-button primary" v-if="!user">
-            <span class="button-icon">✨</span>
-            今すぐ参加する
-          </RouterLink>
-          <RouterLink to="/members" class="cta-button secondary">
-            <span class="button-icon">👥</span>
-            部員一覧へ
-          </RouterLink>
-          <RouterLink to="/login" class="cta-button secondary" v-if="!user">
-            <span class="button-icon">🔑</span>
-            ログイン
-          </RouterLink>
-        </div>
-      </div>
-
-      <div class="hero-decoration">
-        <div class="floating-card card-1">
-          <div class="card-icon">🤝</div>
-          <h3>ネットワーキング</h3>
-          <p>部員同士のつながりを深める</p>
+          <RouterLink to="/about" class="cta-button primary" v-if="!user"> 今すぐ参加する </RouterLink>
+          <RouterLink to="/members" class="cta-button secondary"> 部員一覧へ </RouterLink>
+          <RouterLink to="/login" class="cta-button secondary" v-if="!user"> ログイン </RouterLink>
         </div>
 
-        <div class="floating-card card-2">
-          <div class="card-icon">💼</div>
-          <h3>ビジネス連携</h3>
-          <p>新しいビジネス機会を創出</p>
-        </div>
-
-        <div class="floating-card card-3">
-          <div class="card-icon">🎆</div>
-          <h3>地域貢献</h3>
-          <p>北谷の発展を共に支える</p>
+        <div class="hero-summary" aria-label="青年部の3つの柱">
+          <div class="summary-card">
+            <h3 class="summary-card-title">ネットワーキング</h3>
+            <p class="summary-card-text">部員同士のつながりを深める</p>
+          </div>
+          <div class="summary-card">
+            <h3 class="summary-card-title">ビジネス連携</h3>
+            <p class="summary-card-text">新しいビジネス機会を創出</p>
+          </div>
+          <div class="summary-card">
+            <h3 class="summary-card-title">地域貢献</h3>
+            <p class="summary-card-text">北谷の発展を共に支える</p>
+          </div>
         </div>
       </div>
     </section>
@@ -75,21 +60,21 @@ const { user } = useAuth()
             <h3 class="card-title font-subheading">背景：こんな課題、ありませんでしたか？</h3>
             <ul class="task-list">
               <li>
-                <div class="list-icon icon-red">👤</div>
+                <div class="list-marker list-marker--issue" aria-hidden="true" />
                 <div>
                   <h4>顔と名前が一致しない…</h4>
                   <p>部員が多く、なかなか覚えきれない。</p>
                 </div>
               </li>
               <li>
-                <div class="list-icon icon-red">💼</div>
+                <div class="list-marker list-marker--issue" aria-hidden="true" />
                 <div>
                   <h4>お互いの事業を知らない…</h4>
                   <p>どんな仕事をしているのか具体的に知る機会が少ない。</p>
                 </div>
               </li>
               <li>
-                <div class="list-icon icon-red">🔗</div>
+                <div class="list-marker list-marker--issue" aria-hidden="true" />
                 <div>
                   <h4>連携のきっかけがない…</h4>
                   <p>協業したくても、誰に相談すれば良いか分からない。</p>
@@ -103,21 +88,21 @@ const { user } = useAuth()
             <h3 class="card-title font-subheading">目的：私たちが目指すこと</h3>
             <ul class="task-list">
               <li>
-                <div class="list-icon icon-blue">📈</div>
+                <div class="list-marker list-marker--goal" aria-hidden="true" />
                 <div>
                   <h4>交流の活性化</h4>
                   <p>相互理解を深め、コミュニケーションの質を高める。</p>
                 </div>
               </li>
               <li>
-                <div class="list-icon icon-blue">🤝</div>
+                <div class="list-marker list-marker--goal" aria-hidden="true" />
                 <div>
                   <h4>ビジネスマッチングの促進</h4>
                   <p>部員同士の新たな協業や受発注のきっかけを創出。</p>
                 </div>
               </li>
               <li>
-                <div class="list-icon icon-blue">🌟</div>
+                <div class="list-marker list-marker--goal" aria-hidden="true" />
                 <div>
                   <h4>青年部全体の魅力向上</h4>
                   <p>加入メリットを可視化し、組織の価値を高める。</p>
@@ -193,241 +178,158 @@ const { user } = useAuth()
 
 <style scoped>
 .home-container {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 4rem);
   overflow-x: hidden;
 }
 
-/* ヒーローセクション */
 .hero-section {
-  position: relative;
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(
-    ellipse at center,
-    var(--color-background-soft) 0%,
-    var(--color-background) 70%
-  );
-  overflow: hidden;
-}
-
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    rgba(59, 130, 246, 0.1) 0%,
-    transparent 50%,
-    rgba(59, 130, 246, 0.05) 100%
-  );
-  pointer-events: none;
+  padding: 2rem 0 2.5rem;
+  background: var(--color-background);
 }
 
 .hero-content {
   text-align: center;
-  max-width: 1200px;
-  padding: 2rem 3rem;
-  z-index: 2;
-  position: relative;
+  max-width: 40rem;
+  margin: 0 auto;
   width: 100%;
 }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--color-background-soft);
-  border: 1px solid var(--color-border);
-  border-radius: 2rem;
-  font-size: 0.875rem;
+.hero-kicker {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
   color: var(--vt-c-brand);
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.badge-icon {
-  font-size: 1.125rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: transparent;
-  border-radius: 0;
-  padding: 0;
-}
-
-.hero-logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  background: var(--vt-c-brand-tint);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 9999px;
 }
 
 .hero-title {
-  font-size: 4rem;
-  font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 .title-main {
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--vt-c-brand);
 }
 
 .title-sub {
   color: var(--color-heading);
-  font-size: 0.8em;
+  font-size: 0.92em;
+  font-weight: 700;
 }
 
 .hero-description {
-  font-size: 1.25rem;
+  font-size: 1rem;
   line-height: 1.7;
   color: var(--vt-c-text-dark-2);
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-bottom: 1.5rem;
+  text-align: left;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 0.625rem;
   justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 
 .cta-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  border-radius: 0.75rem;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
   cursor: pointer;
 }
 
 .cta-button.primary {
-  background: linear-gradient(135deg, var(--vt-c-brand), var(--vt-c-brand-hover));
-  color: white;
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  background: var(--vt-c-brand);
+  color: #fff;
+  border: 1px solid var(--vt-c-brand);
 }
 
 .cta-button.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+  background: var(--vt-c-brand-hover);
+  border-color: var(--vt-c-brand-hover);
+  color: #fff;
 }
 
 .cta-button.secondary {
-  background: var(--color-background-soft);
+  background: var(--color-background);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .cta-button.secondary:hover {
   border-color: var(--vt-c-brand);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+  color: var(--vt-c-brand);
 }
 
-.button-icon {
-  font-size: 1.25rem;
+.hero-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  text-align: left;
 }
 
-/* フローティングカード */
-.hero-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.floating-card {
-  position: absolute;
+.summary-card {
+  padding: 1rem 1.125rem;
   background: var(--color-background-soft);
   border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  text-align: center;
-  max-width: 200px;
+  border-radius: 0.75rem;
 }
 
-.card-1 {
-  top: 15%;
-  left: 5%;
-  animation: float 6s ease-in-out infinite;
-}
-
-.card-2 {
-  top: 60%;
-  right: 5%;
-  animation: float 6s ease-in-out infinite 2s;
-}
-
-.card-3 {
-  bottom: 20%;
-  left: 10%;
-  animation: float 6s ease-in-out infinite 4s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(2deg);
-  }
-}
-
-.card-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.floating-card h3 {
-  font-size: 1rem;
-  font-weight: 600;
+.summary-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
   color: var(--color-heading);
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.35rem;
 }
 
-.floating-card p {
-  font-size: 0.875rem;
+.summary-card-text {
+  font-size: 0.8125rem;
+  line-height: 1.5;
   color: var(--vt-c-text-dark-2);
-  line-height: 1.4;
+  margin: 0;
 }
 
-/* About Section */
+@media (min-width: 640px) {
+  .hero-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .hero-description {
+    text-align: center;
+  }
+}
+
 .about-section {
-  padding: 6rem 2rem;
+  padding: 2.5rem 0 3rem;
   background-color: var(--color-background-soft);
   border-top: 1px solid var(--color-border);
 }
 
 .about-container {
-  max-width: 1200px;
+  max-width: 40rem;
   margin: 0 auto;
 }
 
@@ -437,18 +339,19 @@ const { user } = useAuth()
 }
 
 .section-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.375rem, 4vw, 1.75rem);
   font-weight: 700;
   color: var(--color-heading);
-  margin-bottom: 1rem;
-  line-height: 1.3;
+  margin-bottom: 0.75rem;
+  line-height: 1.35;
 }
 
 .section-subtitle {
-  font-size: 1.125rem;
+  font-size: 0.9375rem;
   color: var(--vt-c-text-dark-2);
-  max-width: 600px;
+  max-width: 36rem;
   margin: 0 auto;
+  line-height: 1.6;
 }
 
 .about-grid {
@@ -460,10 +363,9 @@ const { user } = useAuth()
 
 .about-card {
   background: var(--color-background);
-  padding: 2.5rem;
-  border-radius: 1.5rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--color-border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   text-align: left;
 }
 
@@ -473,10 +375,10 @@ const { user } = useAuth()
 }
 
 .card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.0625rem;
+  font-weight: 700;
   color: var(--color-heading);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
   text-align: center;
 }
 
@@ -495,17 +397,22 @@ const { user } = useAuth()
   gap: 1rem;
 }
 
-.list-icon {
-  font-size: 1.5rem;
+.list-marker {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
   flex-shrink: 0;
-  margin-top: 0.25rem;
+  margin-top: 0.45rem;
 }
 
-.icon-red {
-  color: #ef4444;
+.list-marker--issue {
+  background: #fecaca;
+  border: 2px solid #ef4444;
 }
-.icon-blue {
-  color: var(--vt-c-brand);
+
+.list-marker--goal {
+  background: var(--vt-c-brand-tint);
+  border: 2px solid var(--vt-c-brand);
 }
 
 .task-list h4 {
@@ -524,17 +431,17 @@ const { user } = useAuth()
 
 .how-it-works {
   background-color: var(--color-background);
-  padding: 3rem;
-  border-radius: 1.5rem;
+  padding: 1.25rem 1rem 1.5rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--color-border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .section-title-sm {
   text-align: center;
-  font-size: 1.75rem;
-  margin-bottom: 2.5rem;
+  font-size: 1.125rem;
+  margin-bottom: 1.25rem;
   color: var(--color-heading);
+  font-weight: 700;
 }
 
 .steps-container {
@@ -550,18 +457,18 @@ const { user } = useAuth()
 }
 
 .step-icon {
-  width: 50px;
-  height: 50px;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   background: var(--vt-c-brand);
-  color: white;
-  font-size: 1.5rem;
+  color: #fff;
+  font-size: 1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem auto;
-  border: 3px solid var(--vt-c-brand-tint);
+  margin: 0 auto 0.75rem;
+  border: 2px solid var(--vt-c-brand-tint);
 }
 
 .step-arrow {
@@ -575,17 +482,16 @@ const { user } = useAuth()
   line-height: 1.6;
 }
 
-/* GPTs Section */
 .gpts-section {
-  padding: 6rem 2rem;
+  padding: 2.5rem 0 3rem;
   background-color: var(--color-background);
 }
 
 .gpts-container {
-  max-width: 900px;
+  max-width: 40rem;
   margin: 0 auto;
-  padding: 3rem;
-  border-radius: 1.5rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  border-radius: 0.75rem;
   background-color: var(--color-background-soft);
   border: 1px solid var(--color-border);
   text-align: center;
@@ -593,57 +499,62 @@ const { user } = useAuth()
 
 .gpts-container .section-title {
   color: var(--vt-c-brand);
+  font-size: 1.125rem;
 }
 
 .gpts-container .section-subtitle {
   color: var(--vt-c-text-dark-2);
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9375rem;
 }
 
 .gpts-button {
-  display: inline-block;
-  padding: 1rem 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.625rem 1.5rem;
   background-color: var(--vt-c-brand);
-  color: white;
+  color: #fff;
   text-decoration: none;
   font-weight: 600;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  font-size: 0.9375rem;
+  border-radius: 0.5rem;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .gpts-button:hover {
-  transform: translateY(-2px);
   background-color: var(--vt-c-brand-hover);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  color: #fff;
 }
 
-/* QR Code Section */
 .qr-code-section {
-  padding: 4rem 2rem;
+  padding: 2rem 0 3rem;
   background-color: var(--color-background);
 }
 
 .qr-code-container {
-  max-width: 600px;
+  max-width: 24rem;
   margin: 0 auto;
   text-align: center;
 }
 
 .qr-code-image {
-  margin: 2rem 0;
-  border: 6px solid white;
-  border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  margin: 1.25rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  background: var(--color-background);
 }
 
 .qr-code-text {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: var(--vt-c-text-dark-2);
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
-/* レスポンシブ対応 */
 @media (max-width: 992px) {
   .about-grid {
     grid-template-columns: 1fr;
@@ -651,155 +562,32 @@ const { user } = useAuth()
 }
 
 @media (max-width: 768px) {
-  .about-section {
-    padding: 4rem 1rem;
+  .about-header {
+    margin-bottom: 2rem;
   }
-  .section-title {
-    font-size: 2rem;
-  }
+
   .steps-container {
     flex-direction: column;
   }
+
   .step-arrow {
     transform: rotate(90deg);
   }
 
-  /* ▼▼▼ GPTsセクションのスマホ表示を修正 ▼▼▼ */
-  .gpts-section {
-    padding: 4rem 1rem;
-  }
-  .gpts-container {
-    padding: 0;
-    background-color: transparent;
-    border: none;
-  }
-  /* ▲▲▲ ここまで修正 ▲▲▲ */
-}
-
-@media (max-width: 768px) {
-  .hero-section {
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  .hero-badge {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .badge-icon {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .hero-title {
-    font-size: 3.5rem;
-    margin-bottom: 2rem;
-    line-height: 1.1;
-  }
-
-  .title-main,
-  .title-sub {
-    display: block;
-  }
-
-  .hero-description {
-    font-size: 1.3rem;
-    line-height: 1.6;
-    margin-bottom: 3rem;
-  }
-
-  .floating-card {
-    display: none;
-  }
-
   .hero-buttons {
     flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
+    align-items: stretch;
   }
 
   .cta-button {
-    padding: 1rem 2.5rem;
-    font-size: 1.1rem;
     width: 100%;
-    max-width: 280px;
-  }
-
-  .stats-container {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .stats-section {
-    padding: 2rem 1rem;
-  }
-
-  .stats-card {
-    padding: 2rem 1.5rem;
-  }
-
-  .stat-number {
-    font-size: 2.5rem;
-  }
-
-  .stat-label {
-    font-size: 1.1rem;
+    max-width: none;
   }
 }
 
 @media (max-width: 480px) {
   .hero-section {
-    min-height: 100vh;
-    padding: 1.5rem 1rem;
-  }
-
-  .hero-content {
-    padding: 0;
-  }
-
-  .hero-badge {
-    padding: 0.5rem 1.25rem;
-    font-size: 0.9rem;
-    margin-bottom: 2rem;
-  }
-
-  .badge-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
-  .hero-title {
-    font-size: 2.8rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-description {
-    font-size: 1.1rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .cta-button {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-    max-width: 250px;
-  }
-
-  .stats-section {
-    padding: 2rem 1rem;
-  }
-
-  .stats-card {
-    padding: 1.5rem 1rem;
-  }
-
-  .stat-number {
-    font-size: 2rem;
-  }
-
-  .stat-label {
-    font-size: 1rem;
+    padding: 1.5rem 0 2rem;
   }
 }
 
@@ -820,8 +608,6 @@ const { user } = useAuth()
     margin: 0 !important;
   }
 
-  /* Hide unnecessary elements */
-  .hero-decoration,
   .hero-buttons {
     display: none;
   }
@@ -838,8 +624,7 @@ const { user } = useAuth()
     color: #000 !important;
   }
   .title-main {
-    background: none !important;
-    -webkit-text-fill-color: inherit !important;
+    color: #000 !important;
   }
   .hero-description {
     font-size: 11pt;

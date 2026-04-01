@@ -273,11 +273,11 @@ const loginWithGoogle = () => {
 .auth-card {
   width: 100%;
   max-width: 400px;
-  padding: 2.5rem;
+  padding: 1.75rem 1.5rem;
   background-color: var(--color-background-soft);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: 1px solid var(--color-border);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 .auth-title {

@@ -1,23 +1,76 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-weight: normal;
 }
 
-a,
-.green {
+#app > main {
+  flex: 1;
+  width: 100%;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem 1.5rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  #app > main {
+    padding: 0 1.25rem 2rem;
+  }
+}
+
+#app main a {
+  color: var(--vt-c-brand);
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
 }
 
 @media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+  #app main a:hover {
+    color: var(--vt-c-brand-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
+}
+
+/* ボタン見た目のリンクは本文リンクスタイルを当てない */
+#app main a.cta-button,
+#app main a.gpts-button {
+  text-decoration: none;
+}
+
+#app main a.cta-button:hover,
+#app main a.gpts-button:hover {
+  text-decoration: none;
+}
+
+#app main a.cta-button.primary {
+  color: #fff;
+}
+
+#app main a.cta-button.primary:hover {
+  color: #fff;
+}
+
+#app main a.cta-button.secondary {
+  color: var(--color-text);
+}
+
+#app main a.cta-button.secondary:hover {
+  color: var(--vt-c-brand);
+}
+
+#app main a.gpts-button {
+  color: #fff;
+}
+
+#app main a.gpts-button:hover {
+  color: #fff;
+}
+
+.green {
+  color: var(--vt-c-brand);
 }
